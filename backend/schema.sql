@@ -1,0 +1,55 @@
+DROP TYPE IF EXISTS item_type CASCADE;
+DROP TYPE IF EXISTS user_type CASCADE;
+
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS items CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS company CASCADE;
+DROP TABLE IF EXISTS order_items CASCADE;
+
+CREATE TYPE item_type AS ENUM ('HALF', 'FULL', 'FAMILY');
+CREATE TYPE user_type AS ENUM ('OWNER', 'MASTER_ADMIN', 'CASHIER');
+
+CREATE TABLE users (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(50) NOT NULL,
+	email VARCHAR(50) UNIQUE NOT NULL,
+	password VARCHAR(30) NOT NULL,
+	company_role user_type,
+	company_id INT
+);
+
+CREATE TABLE company (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	email VARCHAR(30) NOT NULL,
+	master_admin INT NOT NULL,
+	FOREIGN KEY(master_admin) REFERENCES users(id)
+);
+
+ALTER TABLE users ADD FOREIGN KEY(company_id) REFERENCES company(id);
+
+CREATE TABLE items (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	price NUMERIC(7, 2) NOT NULL,
+	type item_type NOT NULL,
+	company_id INT NOT NULL,
+	FOREIGN KEY(company_id) REFERENCES company(id)
+);
+
+CREATE TABLE orders (
+	id SERIAL PRIMARY KEY,
+	created_at DATE DEFAULT NOW(),
+	company_id INT NOT NULL,
+	FOREIGN KEY(company_id) REFERENCES company(id)
+);
+
+CREATE TABLE order_items (
+	order_id INT NOT NULL,
+	item_id INT NOT NULL,
+	quantity INT NOT NULL,
+	FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,
+	FOREIGN KEY(item_id) REFERENCES items(id) ON DELETE CASCADE,
+	PRIMARY KEY(order_id, item_id)
+);
