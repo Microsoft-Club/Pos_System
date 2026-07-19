@@ -1,12 +1,10 @@
 import { useState } from 'react'
 import './App.css'
+import { RouterProvider } from 'react-router-dom'
+import router from './router'
 
 function App() {
-  return (
-    <>
-      <div className='text-5xl w-full text-center'>Project is here.</div>
-    </>
-  )
+  return <RouterProvider router={router}/>
 }
 
 export default App
