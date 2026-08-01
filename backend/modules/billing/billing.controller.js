@@ -4,7 +4,7 @@
 >>> CALLS THE SPECIFICSERVICE BEING CALLED
 >>>SEND JSON OR THE ERRPOS ENCOUNTERRED
 */
-import { GetItemByCompanyId } from "./billing.service";
+import { GetItemByCompanyId,CreateOrderForCompany} from "./billing.service.js";
 // we are just importing the functio that is talking to the database 
 /*
 * As We might be GET-ting the response i.e /api/v1/building/items
@@ -38,8 +38,50 @@ export async function listItems(req,res) {
         // 500 -> server error 
         return res.status(500).json(
             {
-                message:"Failed to fetch teh menu items",
+                message:"Failed to fetch the menu items",
             }
         );
+    }
+}
+
+
+
+export async function createOrder(req,res){
+
+
+    try{
+        // const companyId=req.user.company_id;
+        const companyId=1; // cause we hardcoded the value of company id
+
+        // Read cart from the request body
+        const {items,payment_method}=req.body;
+        //Validate the cart and payment method
+        if(!items || !Array.isArray(items) || items.length===0){
+            return res.status(400).json({message:"Cart is empty or invalid"});
+        }
+
+
+        // Now we will call the service function to create the order
+        const result=await CreateOrderForCompany(companyId,items);
+        // Return the result to the client
+        return res.status(201).json({
+            order_id:result.order_id,
+            subtotal:result.subtotal,
+            tax:result.tax,
+            total:result.total,
+            payment_method:payment_method|| "CASH",
+            items:result.order_lines,
+        });
+        //201-> created successfully
+    }
+    catch(error){
+        console.error("create order error:",error);
+        if (error.message==="Cart is Empty!" ||
+            error.message==="Invalid Company Item"||
+            error.message==="Invalid Cart Item!")
+            {
+            return res.status(400).json({message:error.message});
+        }//400-> bad request
+    return res.status(500).json({message:"Failed to create order"});
     }
 }

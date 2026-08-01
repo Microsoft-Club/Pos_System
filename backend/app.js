@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(
   cors({
     //dev origin
-    origin:"http://localhost:5173";
+    origin:"http://localhost:5173"
   })
 );
 // Simple health check 
@@ -37,9 +37,9 @@ app.get("/api/v1/health",(req,res)=>{res.json(
 // callback function (request(info by the user),
 // repsone(send data back to the user))=>{}
 
-app.use("/api/v1/building",buildingRoutes);
-// Mounting billing route under the api/v1/building/items
-// So router.get("/items") to GET /api/v1/building/items
+app.use("/api/v1/billing", billingRoutes);
+// Mounting billing route under /api/v1/billing/items
+// So router.get("/items") becomes GET /api/v1/billing/items
 
 export default app;
 //export app, server.js would call app.listen()
