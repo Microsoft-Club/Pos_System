@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+/* Register JetBrains Mono as the default Tailwind font-sans */
+@theme {
+  --font-sans: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Apply it to the whole app */
+body {
+  font-family: var(--font-sans);
+}

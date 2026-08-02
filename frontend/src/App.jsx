@@ -1,23 +1,10 @@
-import { useState } from 'react'
-import './App.css'
+// Component that activates React Router in the project
 import { RouterProvider } from 'react-router-dom'
-import router from './router'
+// Import the router configuration from router.jsx
+import router from './router.jsx'
 
-function App() {
-  return <RouterProvider router={router}/> 
-  // allows page trasition iwthout the browser reloading
-  //rendering the app, top -level wrapper taht listens to URL changes
+// Root component — hands the router to React Router
+export default function App() {
+  // Allows page transitions without a full browser reload
+  return <RouterProvider router={router} />
 }
-
-export default App
-
-// export default function Navbar(){
-//   return(
-//     <nav>
-//         <a href="">Home</a>
-//         <a href="">About</a>
-//         <a href="">Contacts</a>
-
-//     </nav>
-//   )
-// }

@@ -1,32 +1,20 @@
-import { Navigate, Outlet, Route, Link, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
-import './App.css'
+// Navigate = redirect helper, Route = one URL rule
+import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+// Module 2: Billing Page
+import BillingPage from './modules/billing/BillingPage.jsx'
 
-function RootLayout() {
-  return (
-    <div className="app-shell">
-      <nav className="navbar">
-        <div className="brand">POS System</div>
-        <div className="nav-links">
-          <Link to="/">Home</Link>
-          <Link to="/products">Products</Link>
-          <Link to="/orders">Orders</Link>
-        </div>
-      </nav>
-
-      <main className="page-content">
-        <Outlet />
-      </main>
-    </div>
-  )
-}
-
+// createBrowserRouter builds the routing table for the whole app
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<RootLayout />}>
-      <Route index element={<div className="page"><h1>Welcome to the POS system</h1><p>Your navbar is now visible.</p></div>} />
-      <Route path="products" element={<div className="page"><h1>Products</h1></div>} />
-      <Route path="orders" element={<div className="page"><h1>Orders</h1></div>} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+    <Route path="/">
+      {/* "/" redirects straight to the sales screen */}
+      <Route index element={<Navigate to="/sales" replace />} />
+
+      {/* The POS billing screen (Module 2) */}
+      <Route path="sales" element={<BillingPage />} />
+
+      {/* Any unknown URL falls back to /sales */}
+      <Route path="*" element={<Navigate to="/sales" replace />} />
     </Route>
   )
 )

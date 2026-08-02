@@ -76,12 +76,14 @@ export async function createOrder(req,res){
     }
     catch(error){
         console.error("create order error:",error);
-        if (error.message==="Cart is Empty!" ||
-            error.message==="Invalid Company Item"||
-            error.message==="Invalid Cart Item!")
-            {
-            return res.status(400).json({message:error.message});
-        }//400-> bad request
-    return res.status(500).json({message:"Failed to create order"});
+        // Match the exact messages thrown by the service
+        if (
+            error.message === "Cart is Empty!" ||
+            error.message === "Invalid Cart Item!" ||
+            error.message === "Items not found or do not belong to the company!"
+        ) {
+            return res.status(400).json({ message: error.message }); // 400 = bad request
+        }
+        return res.status(500).json({ message: "Failed to create order" }); // 500 = server error
     }
 }
