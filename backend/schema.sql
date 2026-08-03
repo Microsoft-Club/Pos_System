@@ -7,7 +7,6 @@ DROP TABLE IF EXISTS orders CASCADE;
 DROP TABLE IF EXISTS company CASCADE;
 DROP TABLE IF EXISTS order_items CASCADE;
 
-CREATE TYPE item_type AS ENUM ('HALF', 'FULL', 'FAMILY');
 CREATE TYPE user_type AS ENUM ('OWNER', 'MASTER_ADMIN', 'CASHIER');
 
 CREATE TABLE users (
@@ -22,9 +21,10 @@ CREATE TABLE users (
 CREATE TABLE company (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(100) NOT NULL,
+	logo TEXT NOT NULL,
 	email VARCHAR(30) NOT NULL,
 	master_admin INT NOT NULL,
-	FOREIGN KEY(master_admin) REFERENCES users(id)
+	FOREIGN KEY(master_admin) REFERENCES users(id) ON DELETE CASCADE
 );
 
 ALTER TABLE users ADD FOREIGN KEY(company_id) REFERENCES company(id);
@@ -33,16 +33,16 @@ CREATE TABLE items (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(100) NOT NULL,
 	price NUMERIC(7, 2) NOT NULL,
-	type item_type NOT NULL,
+	type VARCHAR(30) NOT NULL,
 	company_id INT NOT NULL,
-	FOREIGN KEY(company_id) REFERENCES company(id)
+	FOREIGN KEY(company_id) REFERENCES company(id) ON DELETE CASCADE
 );
 
 CREATE TABLE orders (
 	id SERIAL PRIMARY KEY,
 	created_at DATE DEFAULT NOW(),
 	company_id INT NOT NULL,
-	FOREIGN KEY(company_id) REFERENCES company(id)
+	FOREIGN KEY(company_id) REFERENCES company(id) ON DELETE CASCADE
 );
 
 CREATE TABLE order_items (
