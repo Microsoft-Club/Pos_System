@@ -1,5 +1,6 @@
 import express from "express";
 import dashboardRouter from "./routes/dashboard.js";
+import itemRouter from "./routes/items.js";
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(express.json());
 
 // API Routes
 app.use("/api/v1/dashboard", dashboardRouter);
+app.use("/api/v1/items", itemRouter);
 
 export default app;
