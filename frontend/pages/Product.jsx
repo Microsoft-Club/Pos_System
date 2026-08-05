@@ -3,7 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Package, Plus, RefreshCw } from 'lucide-react';
 import ItemCard from '../components/ItemCard.jsx';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+const API_BASE = import.meta.env.VITE_API_URL;
 const ITEM_TYPES = ['HALF', 'FULL', 'FAMILY'];
 
 const emptyForm = { name: '', price: '', type: 'HALF' };
@@ -44,10 +44,12 @@ export default function Product() {
 
   const handleAdd = async (e) => {
     e.preventDefault();
+
     if (!form.name.trim() || !form.price || !form.type) {
       setError('Please fill in name, price, and type.');
       return;
     }
+
     if (!user?.company_id) {
       setError('Company ID not available from user context yet.');
       return;
@@ -55,6 +57,7 @@ export default function Product() {
 
     setSubmitting(true);
     setError('');
+
     try {
       const res = await fetch(`${API_BASE}/items`, {
         method: 'POST',
@@ -66,11 +69,15 @@ export default function Product() {
           company_id: user.company_id,
         }),
       });
+
       const data = await res.json();
+
       if (!data.success) throw new Error(data.message || 'Failed to add item');
+
       setItems((prev) => [...prev, data.data]);
       setForm(emptyForm);
       setShowForm(false);
+      
     } catch (err) {
       console.error(err);
       setError(err.message || 'Failed to add item');
@@ -87,8 +94,11 @@ export default function Product() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
       });
+
       const data = await res.json();
+
       if (!data.success) throw new Error(data.message || 'Failed to update item');
+
       setItems((prev) => prev.map((item) => (item.id === id ? data.data : item)));
     } catch (err) {
       console.error(err);
@@ -101,8 +111,11 @@ export default function Product() {
     setError('');
     try {
       const res = await fetch(`${API_BASE}/items/${id}`, { method: 'DELETE' });
+
       const data = await res.json();
+
       if (!data.success) throw new Error(data.message || 'Failed to delete item');
+
       setItems((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
       console.error(err);
