@@ -31,10 +31,10 @@ const seed = async () => {
 
         // 2. Insert Company
         const companyRes = await client.query(`
-            INSERT INTO company (name, email, master_admin)
-            VALUES ($1, $2, $3)
+            INSERT INTO company (name, logo, email, master_admin)
+            VALUES ($1, $2, $3, $4)
             RETURNING id;
-        `, ["Biryani Junction", "info@biryanijunction.com", userId]);
+        `, ["Biryani Junction", "", "info@biryanijunction.com", userId]);
         const companyId = companyRes.rows[0].id;
 
         // 3. Update User's company_id

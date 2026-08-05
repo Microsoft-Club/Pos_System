@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   TrendingUp, 
@@ -10,21 +10,30 @@ import {
   ReceiptText, 
   Printer, 
   ChevronRight,
-  TrendingDown,
   RefreshCw
 } from 'lucide-react';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+
+const FALLBACK_STATS = {
+  todaySales: 8750.00,
+  todayOrders: 28,
+  halfBiryaniCount: 42,
+  fullBiryaniCount: 26,
+  familyPackCount: 8,
+  totalCashCollected: 8750.00,
+  isDemoData: true
+};
 
 export default function LandingPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const [useDemo, setUseDemo] = useState(false);
 
-  const fetchStats = async (forceDemo = false) => {
+  const fetchStats = useCallback(async (forceDemo = false) => {
     setLoading(true);
-    setError(false);
     try {
-      const url = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/dashboard/stats${forceDemo ? '?demo=true' : ''}`;
+      const url = `${API_BASE}/dashboard/stats${forceDemo ? '?demo=true' : ''}`;
       const response = await fetch(url);
       const resData = await response.json();
       if (resData.success) {
@@ -35,24 +44,41 @@ export default function LandingPage() {
       }
     } catch (err) {
       console.error("API error, loading fallback mock data:", err);
-      // Fallback local mock data so the landing page still looks amazing
-      setStats({
-        todaySales: 8750.00,
-        todayOrders: 28,
-        halfBiryaniCount: 42,
-        fullBiryaniCount: 26,
-        familyPackCount: 8,
-        totalCashCollected: 8750.00,
-        isDemoData: true
-      });
+      setStats(FALLBACK_STATS);
       setUseDemo(true);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchStats();
+    let cancelled = false;
+
+    async function loadInitialStats() {
+      try {
+        const response = await fetch(`${API_BASE}/dashboard/stats`);
+        const resData = await response.json();
+        if (cancelled) return;
+        if (resData.success) {
+          setStats(resData.data);
+          setUseDemo(resData.data.isDemoData);
+        } else {
+          throw new Error("Failed to load stats");
+        }
+      } catch (err) {
+        if (cancelled) return;
+        console.error("API error, loading fallback mock data:", err);
+        setStats(FALLBACK_STATS);
+        setUseDemo(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadInitialStats();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Quick module access configuration
@@ -85,7 +111,7 @@ export default function LandingPage() {
       color: "from-amber-600 to-amber-500",
       accent: "amber",
       tag: "Module 3",
-      assignee: "System"
+      assignee: "Zuhaib"
     }
   ];
 

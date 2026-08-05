@@ -1,11 +1,11 @@
-import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout.jsx';
 import DashboardLayout from '../layouts/DashboardLayout.jsx';
 import LandingPage from '../pages/LandingPage.jsx';
 import Dashboard from '../pages/Dashboard.jsx';
-import { ProductManagement, BillingScreen, ReceiptPrinting } from '../pages/Placeholders.jsx';
+import { BillingScreen } from '../pages/Placeholders.jsx';
 import Product from '../pages/Product.jsx';
+import ReceiptPrinting from '../pages/ReceiptPrinting.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(

@@ -1,16 +1,6 @@
-import React, { useState } from 'react';
-import { NavLink, Link, Outlet } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Package, 
-  ReceiptText, 
-  Printer, 
-  Menu, 
-  X, 
-  ChefHat,
-  User,
-  Activity
-} from 'lucide-react';
+import { useState } from 'react';
+import { Menu, User, Activity } from 'lucide-react';
+import { Outlet } from 'react-router-dom';
 import UserNavbarDesktop from '../components/UserNavbarDesktop';
 import UserNavbarMobile from '../components/UserNavbarMobile';
 

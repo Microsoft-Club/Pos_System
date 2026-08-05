@@ -1,6 +1,7 @@
 import express from "express";
 import dashboardRouter from "./routes/dashboard.js";
 import itemRouter from "./routes/items.js";
+import receiptRouter from "./routes/receipts.js";
 import cors from "cors";
 
 const app = express();
@@ -15,5 +16,6 @@ app.use(express.json());
 // API Routes
 app.use("/api/v1/dashboard", dashboardRouter);
 app.use("/api/v1/items", itemRouter);
+app.use("/api/v1/receipts", receiptRouter);
 
 export default app;

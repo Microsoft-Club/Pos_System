@@ -42,6 +42,8 @@ CREATE TABLE orders (
 	id SERIAL PRIMARY KEY,
 	created_at DATE DEFAULT NOW(),
 	company_id INT NOT NULL,
+	payment_method VARCHAR(20) DEFAULT 'CASH',
+	printed_at TIMESTAMP,
 	FOREIGN KEY(company_id) REFERENCES company(id) ON DELETE CASCADE
 );
 

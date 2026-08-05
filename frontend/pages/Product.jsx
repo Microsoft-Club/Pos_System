@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Package, Plus, RefreshCw } from 'lucide-react';
 import ItemCard from '../components/ItemCard.jsx';
@@ -17,7 +17,7 @@ export default function Product() {
   const [submitting, setSubmitting] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -31,10 +31,31 @@ export default function Product() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchItems();
+    let cancelled = false;
+
+    async function loadItems() {
+      try {
+        const res = await fetch(`${API_BASE}/items`);
+        const data = await res.json();
+        if (cancelled) return;
+        if (!data.success) throw new Error(data.message || 'Failed to load items');
+        setItems(data.data || []);
+      } catch (err) {
+        if (cancelled) return;
+        console.error(err);
+        setError(err.message || 'Failed to load items');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadItems();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleChange = (e) => {
