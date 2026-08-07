@@ -13,9 +13,11 @@ CREATE TABLE users (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(50) NOT NULL,
 	email VARCHAR(50) UNIQUE NOT NULL,
-	password VARCHAR(30) NOT NULL,
+	password TEXT NOT NULL, -- widened password base
 	company_role user_type,
-	company_id INT
+	company_id INT, 
+	reset_token TEXT,
+	reset_token_expiry TIMESTAMP
 );
 
 CREATE TABLE company (
