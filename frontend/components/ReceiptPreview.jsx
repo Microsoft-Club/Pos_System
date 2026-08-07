@@ -1,30 +1,8 @@
-const formatMoney = (value) =>
-  `Rs. ${Number(value || 0).toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
-
-const formatDateTime = (value) => {
-  const date = value ? new Date(value) : new Date();
-  if (Number.isNaN(date.getTime())) {
-    return { date: "—", time: "—" };
-  }
-  return {
-    date: date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }),
-    time: date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  };
-};
+import { formatMoney, formatDateTime } from "../utils/receiptTemplate.js";
 
 /**
  * Thermal-style receipt preview (58/80mm).
- * Rendered on-screen and reused by window.print() via #receipt-print-root.
+ * On-screen preview; printing uses receiptTemplate.js for identical inline HTML.
  */
 export default function ReceiptPreview({ order, paymentMethod = "CASH" }) {
   if (!order) {
@@ -40,12 +18,8 @@ export default function ReceiptPreview({ order, paymentMethod = "CASH" }) {
   const taxRatePct = ((order.tax_rate || 0) * 100).toFixed(1);
 
   return (
-    <div
-      id="receipt-print-root"
-      className="receipt-preview mx-auto w-full max-w-[280px] bg-white text-slate-900 shadow-2xl shadow-black/40 border border-slate-200"
-    >
+    <div className="receipt-preview mx-auto w-[80mm] max-w-[80mm] bg-white text-slate-900 shadow-2xl shadow-black/40 border border-slate-200">
       <div className="px-4 py-5 font-mono text-[11px] leading-relaxed">
-        {/* Header */}
         <div className="text-center mb-4">
           {order.company_logo ? (
             <img
@@ -77,7 +51,6 @@ export default function ReceiptPreview({ order, paymentMethod = "CASH" }) {
 
         <div className="border-t border-dashed border-slate-300 my-3" />
 
-        {/* Line items */}
         <div className="space-y-1.5">
           {(order.items || []).map((item, index) => (
             <div key={`${item.name}-${index}`} className="flex justify-between gap-2">
@@ -91,7 +64,6 @@ export default function ReceiptPreview({ order, paymentMethod = "CASH" }) {
 
         <div className="border-t border-dashed border-slate-300 my-3" />
 
-        {/* Totals */}
         <div className="space-y-1">
           <div className="flex justify-between text-slate-600">
             <span>Subtotal</span>

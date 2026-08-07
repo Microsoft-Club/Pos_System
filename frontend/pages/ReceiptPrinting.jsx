@@ -121,9 +121,16 @@ export default function ReceiptPrinting() {
 
       // Let React re-render the preview with updated payment/time
       setTimeout(() => {
-        triggerThermalPrint();
+        triggerThermalPrint(
+          {
+            ...selectedOrder,
+            payment_method: paymentMethod,
+            printed_at: result?.data?.printed_at || new Date().toISOString(),
+          },
+          paymentMethod
+        );
         setPrinting(false);
-        setStatusMsg("Print dialog opened. Choose your thermal printer (80mm / 58mm).");
+        setStatusMsg("Print dialog opened. Choose your printer (80mm / 58mm) and print.");
       }, 80);
     } catch (err) {
       console.error(err);
