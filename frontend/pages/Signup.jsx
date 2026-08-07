@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
+import { getHomePathForUser } from '../utils/roles.js';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
-const ROLES = ['OWNER', 'MASTER_ADMIN', 'CASHIER'];
 
 export default function Signup() {
   const { user, setUser } = useOutletContext() || {};
@@ -13,8 +13,7 @@ export default function Signup() {
     name: '',
     email: '',
     password: '',
-    confirm_password: '',
-    role: 'OWNER',
+    confirm_password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -50,7 +49,7 @@ export default function Signup() {
       }
 
       setUser?.(data.data);
-      navigate('/user');
+      navigate(getHomePathForUser(data.data));
     } catch (err) {
       setError(err.message || 'Signup failed');
     } finally {
@@ -59,7 +58,7 @@ export default function Signup() {
   };
 
   useEffect(() => {
-    if(user) navigate("/user");
+    if (user) navigate(getHomePathForUser(user));
   }, []);
 
   return (
@@ -115,25 +114,6 @@ export default function Signup() {
               className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
               placeholder="you@example.com"
             />
-          </div>
-
-          <div>
-            <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
-              Role
-            </label>
-            <select
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              required
-              className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
-            >
-              {ROLES.map((role) => (
-                <option key={role} value={role}>
-                  {role.replace('_', ' ')}
-                </option>
-              ))}
-            </select>
           </div>
 
           <div>

@@ -7,111 +7,40 @@ import {
   RefreshCw, 
   Clock, 
   CheckCircle,
-  Database,
-  Info,
   Calendar,
   Layers
 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
-const generateMockStats = () => {
-  const weeklySales = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    const dayOfWeek = d.getDay();
-    const baseSales = (dayOfWeek === 0 || dayOfWeek === 6) ? 14000 : 8500;
-    const randomFactor = Math.floor(Math.random() * 4000) - 2000;
-    const sales = baseSales + randomFactor;
-    weeklySales.push({
-      date: dateStr,
-      sales: parseFloat(sales.toFixed(2)),
-      orders: Math.floor(sales / 350) + 1
-    });
-  }
-
-  return {
-    todaySales: 9480.00,
-    todayOrders: 31,
-    halfBiryaniCount: 48,
-    fullBiryaniCount: 29,
-    familyPackCount: 9,
-    totalCashCollected: 9480.00,
-    weeklySales: weeklySales,
-    recentOrders: [
-      { id: 1045, time: "12:45 PM", items: "2x Full Chicken Biryani, 1x Coke 1.5L", total: 1190.00, status: "Completed" },
-      { id: 1044, time: "12:30 PM", items: "1x Half Beef Biryani, 1x Raita", total: 430.00, status: "Completed" },
-      { id: 1043, time: "12:15 PM", items: "1x Family Pack Biryani, 1x Coke 1.5L", total: 1600.00, status: "Completed" },
-      { id: 1042, time: "11:50 AM", items: "3x Half Chicken Biryani", total: 960.00, status: "Completed" },
-      { id: 1041, time: "11:30 AM", items: "1x Full Chicken Biryani, 1x Salad", total: 570.00, status: "Completed" }
-    ],
-    isDemoData: true
-  };
-};
-
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [demoMode, setDemoMode] = useState(false);
+  const [error, setError] = useState('');
 
-  const fetchStats = useCallback(async (forceDemo = false) => {
+  const fetchStats = useCallback(async () => {
     setLoading(true);
+    setError('');
     try {
-      const url = `${API_BASE}/dashboard/stats${forceDemo ? '?demo=true' : ''}`;
-      const response = await fetch(url);
+      const response = await fetch(`${API_BASE}/dashboard/stats`);
       const resData = await response.json();
       if (resData.success) {
         setStats(resData.data);
-        setDemoMode(resData.data.isDemoData);
       } else {
-        throw new Error("Failed to load stats");
+        throw new Error(resData.message || 'Failed to load stats');
       }
     } catch (err) {
-      console.error("Dashboard API error, loading mock fallback:", err);
-      setStats(generateMockStats());
-      setDemoMode(true);
+      console.error('Dashboard API error:', err);
+      setStats(null);
+      setError(err.message || 'Failed to load dashboard stats');
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function loadInitialStats() {
-      try {
-        const response = await fetch(`${API_BASE}/dashboard/stats`);
-        const resData = await response.json();
-        if (cancelled) return;
-        if (resData.success) {
-          setStats(resData.data);
-          setDemoMode(resData.data.isDemoData);
-        } else {
-          throw new Error("Failed to load stats");
-        }
-      } catch (err) {
-        if (cancelled) return;
-        console.error("Dashboard API error, loading mock fallback:", err);
-        setStats(generateMockStats());
-        setDemoMode(true);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    loadInitialStats();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const handleToggleMode = () => {
-    const targetDemo = !demoMode;
-    setDemoMode(targetDemo);
-    fetchStats(targetDemo);
-  };
+    fetchStats();
+  }, [fetchStats]);
 
   // Helper values for drawing SVG chart
   const getWeeklyMaxSales = () => {
@@ -158,35 +87,24 @@ export default function Dashboard() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
             <Layers className="w-6 h-6 text-indigo-400" />
-            Module 4: Dashboard
+            Dashboard
           </h1>
-          <p className="text-xs text-slate-400">Review business metrics, daily sales graphs, and biryani inventory tracking.</p>
+          <p className="text-xs text-slate-400">Review business metrics, daily sales graphs, and recent orders.</p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Database Sync Status Indicators */}
-          <button
-            onClick={handleToggleMode}
-            className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-2 transition-all duration-200 shadow-sm
-              ${demoMode 
-                ? 'bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/25' 
-                : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/25'}`}
-          >
-            <Database className="w-3.5 h-3.5" />
-            {demoMode ? 'Using Mock Demo Data' : 'Synced with PostgreSQL'}
-            <span className="text-[10px] bg-slate-800/80 px-1.5 py-0.5 rounded text-slate-300 ml-1">
-              Toggle Mode
-            </span>
-          </button>
-
-          <button 
-            onClick={() => fetchStats(demoMode)}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition-colors"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-        </div>
+        <button 
+          onClick={fetchStats}
+          className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition-colors"
+        >
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+        </button>
       </div>
+
+      {error && (
+        <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+          {error}
+        </div>
+      )}
 
       {loading ? (
         <div className="space-y-6">
@@ -210,11 +128,7 @@ export default function Dashboard() {
                   <DollarSign className="w-4 h-4" />
                 </span>
               </div>
-              <div className="text-2xl font-extrabold text-white">Rs. {stats?.todaySales.toLocaleString()}</div>
-              <p className="text-[10px] text-slate-400 mt-2 flex items-center gap-1">
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400 font-semibold">+14.2%</span> since yesterday
-              </p>
+              <div className="text-2xl font-extrabold text-white">Rs. {(stats?.todaySales ?? 0).toLocaleString()}</div>
             </div>
 
             {/* Orders Card */}
@@ -226,11 +140,7 @@ export default function Dashboard() {
                   <ShoppingBag className="w-4 h-4" />
                 </span>
               </div>
-              <div className="text-2xl font-extrabold text-white">{stats?.todayOrders} Orders</div>
-              <p className="text-[10px] text-slate-400 mt-2 flex items-center gap-1">
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400 font-semibold">+6.5%</span> ticket count
-              </p>
+              <div className="text-2xl font-extrabold text-white">{stats?.todayOrders ?? 0} Orders</div>
             </div>
 
             {/* Cash Collected Card */}
@@ -242,34 +152,32 @@ export default function Dashboard() {
                   <DollarSign className="w-4 h-4" />
                 </span>
               </div>
-              <div className="text-2xl font-extrabold text-white">Rs. {stats?.totalCashCollected.toLocaleString()}</div>
+              <div className="text-2xl font-extrabold text-white">Rs. {(stats?.totalCashCollected ?? 0).toLocaleString()}</div>
               <p className="text-[10px] text-slate-400 mt-2">
                 100% payments cleared in cash
               </p>
             </div>
 
-            {/* Total Biryani Units Card */}
+            {/* Total Units Card */}
             <div className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-orange-500/30 transition-all duration-300">
               <div className="absolute top-0 right-0 w-20 h-20 bg-orange-500/5 rounded-full blur-lg pointer-events-none" />
               <div className="flex justify-between items-center mb-3">
-                <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Biryani Servings</span>
+                <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Items Sold</span>
                 <span className="p-2 bg-orange-500/10 text-orange-400 rounded-lg">
                   <Flame className="w-4 h-4" />
                 </span>
               </div>
               <div className="text-2xl font-extrabold text-white">
-                {(stats ? stats.halfBiryaniCount + stats.fullBiryaniCount + stats.familyPackCount : 0)} Units
+                {stats?.itemsSold ?? 0} Units
               </div>
               <p className="text-[10px] text-slate-400 mt-2">
-                Half: {stats?.halfBiryaniCount} | Full: {stats?.fullBiryaniCount} | Family: {stats?.familyPackCount}
+                Total quantity sold today
               </p>
             </div>
           </div>
 
-          {/* Row 2: Graph & Biryani Counts */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Sales Trend Custom SVG Area Chart */}
-            <div className="lg:col-span-2 bg-[#0f1626] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6 flex flex-col justify-between">
+          {/* Row 2: Weekly Sales Chart */}
+          <div className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
@@ -342,68 +250,6 @@ export default function Dashboard() {
                   <span key={idx}>{d.date}</span>
                 ))}
               </div>
-            </div>
-
-            {/* Biryani tracker visualizer */}
-            <div className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
-              <div>
-                <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
-                  <Flame className="w-4.5 h-4.5 text-orange-400" />
-                  Biryani Packing Types
-                </h3>
-                <p className="text-[10px] text-slate-400">Total units sold today by packaging size</p>
-              </div>
-
-              {/* Progress visualizer */}
-              <div className="space-y-4 py-4">
-                {/* Half Biryani */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-slate-300">Half Biryani Box</span>
-                    <span className="text-orange-400">{stats?.halfBiryaniCount} Sold</span>
-                  </div>
-                  <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full transition-all duration-1000"
-                      style={{ width: `${Math.min(100, (stats?.halfBiryaniCount / 60) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Full Biryani */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-slate-300">Full Biryani Box</span>
-                    <span className="text-orange-500">{stats?.fullBiryaniCount} Sold</span>
-                  </div>
-                  <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-orange-600 to-red-500 rounded-full transition-all duration-1000"
-                      style={{ width: `${Math.min(100, (stats?.fullBiryaniCount / 60) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Family Pack */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-slate-300">Family Pack Tray</span>
-                    <span className="text-red-500">{stats?.familyPackCount} Sold</span>
-                  </div>
-                  <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-red-600 to-pink-500 rounded-full transition-all duration-1000"
-                      style={{ width: `${Math.min(100, (stats?.familyPackCount / 20) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-[10px] text-slate-400 bg-slate-900/40 p-2.5 rounded-xl border border-slate-850 flex items-start gap-2">
-                <Info className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                <span>Sizes help monitor packaging inventory (boxes/trays) in the kitchen.</span>
-              </div>
-            </div>
           </div>
 
           {/* Row 3: Recent Orders Table */}

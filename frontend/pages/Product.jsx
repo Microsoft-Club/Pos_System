@@ -4,9 +4,7 @@ import { Package, Plus, RefreshCw } from 'lucide-react';
 import ItemCard from '../components/ItemCard.jsx';
 
 const API_BASE = import.meta.env.VITE_API_URL;
-const ITEM_TYPES = ['HALF', 'FULL', 'FAMILY'];
-
-const emptyForm = { name: '', price: '', type: 'HALF' };
+const emptyForm = { name: '', price: '', type: '' };
 
 export default function Product() {
   const { user } = useOutletContext() || {};
@@ -196,7 +194,7 @@ export default function Product() {
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                placeholder="e.g. Half Chicken Biryani"
+                placeholder="e.g. Menu Item Name"
                 className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
                 required
               />
@@ -221,19 +219,14 @@ export default function Product() {
               <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
                 Type
               </label>
-              <select
+              <input
                 name="type"
                 value={form.type}
                 onChange={handleChange}
-                className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                placeholder="e.g. Food, Drink"
+                className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
                 required
-              >
-                {ITEM_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
           </div>
           <div className="flex justify-end">

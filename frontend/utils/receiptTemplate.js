@@ -52,7 +52,7 @@ export function buildReceiptPrintHtml(order, paymentMethod = "CASH") {
   const { date, time } = formatDateTime(order.printed_at || order.created_at);
   const method = (paymentMethod || order.payment_method || "CASH").toUpperCase();
   const taxRatePct = ((order.tax_rate || 0) * 100).toFixed(1);
-  const companyName = escapeHtml(order.company_name || "Biryani Junction");
+  const companyName = escapeHtml(order.company_name || "Company");
 
   const logoHtml = order.company_logo
     ? `<img src="${escapeHtml(order.company_logo)}" alt="${companyName}" width="40" height="40" style="display:block;margin:0 auto 8px;object-fit:contain;" />`

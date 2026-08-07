@@ -26,7 +26,7 @@ const seed = async () => {
             INSERT INTO users (name, email, password, company_role, company_id)
             VALUES ($1, $2, $3, $4, NULL)
             RETURNING id;
-        `, ["Saadia", "saadia@possystem.com", "admin123", "OWNER"]);
+        `, ["Admin User", "admin@possystem.com", "admin123", "MASTER_ADMIN"]);
         const userId = userRes.rows[0].id;
 
         // 2. Insert Company
@@ -34,7 +34,7 @@ const seed = async () => {
             INSERT INTO company (name, logo, email, master_admin)
             VALUES ($1, $2, $3, $4)
             RETURNING id;
-        `, ["Biryani Junction", "", "info@biryanijunction.com", userId]);
+        `, ["Demo Company", "https://placehold.co/128x128", "info@democompany.com", userId]);
         const companyId = companyRes.rows[0].id;
 
         // 3. Update User's company_id
@@ -45,14 +45,14 @@ const seed = async () => {
         console.log("Seeding Menu Items...");
         // 4. Insert Items
         const items = [
-            { name: "Half Chicken Biryani", price: 320.00, type: "HALF" },
-            { name: "Full Chicken Biryani", price: 520.00, type: "FULL" },
-            { name: "Family Pack Biryani", price: 1450.00, type: "FAMILY" },
-            { name: "Half Beef Biryani", price: 380.00, type: "HALF" },
-            { name: "Full Beef Biryani", price: 580.00, type: "FULL" },
-            { name: "Raita", price: 50.00, type: "HALF" },
-            { name: "Salad", price: 50.00, type: "HALF" },
-            { name: "Coke 1.5L", price: 150.00, type: "FAMILY" }
+            { name: "Item A", price: 320.00, type: "Food" },
+            { name: "Item B", price: 520.00, type: "Food" },
+            { name: "Item C", price: 1450.00, type: "Food" },
+            { name: "Item D", price: 380.00, type: "Food" },
+            { name: "Item E", price: 580.00, type: "Food" },
+            { name: "Side 1", price: 50.00, type: "Side" },
+            { name: "Side 2", price: 50.00, type: "Side" },
+            { name: "Drink Large", price: 150.00, type: "Drink" }
         ];
 
         const itemIds = {};
@@ -67,16 +67,13 @@ const seed = async () => {
 
         console.log("Seeding Orders and Order Items...");
         // 5. Seed orders for the last 7 days (including today)
-        const itemPrices = {
-            "Half Chicken Biryani": 320.00,
-            "Full Chicken Biryani": 520.00,
-            "Family Pack Biryani": 1450.00,
-            "Half Beef Biryani": 380.00,
-            "Full Beef Biryani": 580.00,
-            "Raita": 50.00,
-            "Salad": 50.00,
-            "Coke 1.5L": 150.00
-        };
+        const mainItems = [
+            "Item A",
+            "Item B",
+            "Item C",
+            "Item D",
+            "Item E"
+        ];
 
         const today = new Date();
         for (let i = 6; i >= 0; i--) {
@@ -96,51 +93,34 @@ const seed = async () => {
                 `, [dateStr, companyId]);
                 const orderId = orderRes.rows[0].id;
 
-                // Pick a few random items to add to this order
                 const selectedItems = [];
-                // Ensure every order has at least one Biryani
-                const biryanis = [
-                    "Half Chicken Biryani", 
-                    "Full Chicken Biryani", 
-                    "Family Pack Biryani", 
-                    "Half Beef Biryani", 
-                    "Full Beef Biryani"
-                ];
-                const primaryBiryani = biryanis[Math.floor(Math.random() * biryanis.length)];
+                const primaryItem = mainItems[Math.floor(Math.random() * mainItems.length)];
                 selectedItems.push({
-                    id: itemIds[primaryBiryani],
-                    name: primaryBiryani,
+                    id: itemIds[primaryItem],
                     qty: Math.floor(Math.random() * 3) + 1
                 });
 
-                // 50% chance of adding Raita
                 if (Math.random() > 0.5) {
                     selectedItems.push({
-                        id: itemIds["Raita"],
-                        name: "Raita",
+                        id: itemIds["Side 1"],
                         qty: Math.floor(Math.random() * 2) + 1
                     });
                 }
                 
-                // 40% chance of adding Salad
                 if (Math.random() > 0.6) {
                     selectedItems.push({
-                        id: itemIds["Salad"],
-                        name: "Salad",
+                        id: itemIds["Side 2"],
                         qty: Math.floor(Math.random() * 2) + 1
                     });
                 }
 
-                // 30% chance of adding Coke
                 if (Math.random() > 0.7) {
                     selectedItems.push({
-                        id: itemIds["Coke 1.5L"],
-                        name: "Coke 1.5L",
+                        id: itemIds["Drink Large"],
                         qty: 1
                     });
                 }
 
-                // Insert into order_items
                 for (const sel of selectedItems) {
                     await client.query(`
                         INSERT INTO order_items (order_id, item_id, quantity)

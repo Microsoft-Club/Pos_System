@@ -9,6 +9,7 @@ import ReceiptPrinting from '../pages/ReceiptPrinting.jsx';
 import { BillingScreen } from '../pages/Placeholders.jsx';
 import Login from '../pages/Login.jsx';
 import Signup from '../pages/Signup.jsx';
+import AddMember from '../pages/AddMember.jsx';
 import { getUserLoader } from '../loaders/getUserLoader.js';
 
 const router = createBrowserRouter(
@@ -24,6 +25,7 @@ const router = createBrowserRouter(
           <Route path="/products" element={<Product />} />
           <Route path="/billing" element={<BillingScreen />} />
           <Route path="/receipts" element={<ReceiptPrinting />} />
+          <Route path="/add-member" element={<AddMember />} />
         </Route>
       </Route>
     </>

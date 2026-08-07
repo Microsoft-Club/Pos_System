@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
 
-const ITEM_TYPES = ['HALF', 'FULL', 'FAMILY'];
-
 export default function ItemCard({ item, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
@@ -23,13 +21,13 @@ export default function ItemCard({ item, onUpdate, onDelete }) {
   };
 
   const handleSave = async () => {
-    if (!form.name.trim() || !form.price || !form.type) return;
+    if (!form.name.trim() || !form.price || !form.type.trim()) return;
     setSaving(true);
     try {
       await onUpdate(item.id, {
         name: form.name.trim(),
         price: parseFloat(form.price),
-        type: form.type,
+        type: form.type.trim(),
       });
       setEditing(false);
     } finally {
@@ -75,18 +73,13 @@ export default function ItemCard({ item, onUpdate, onDelete }) {
             <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
               Type
             </label>
-            <select
+            <input
               name="type"
               value={form.type}
               onChange={handleChange}
+              placeholder="e.g. Food, Drink"
               className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
-            >
-              {ITEM_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div className="flex gap-2 pt-1">
             <button

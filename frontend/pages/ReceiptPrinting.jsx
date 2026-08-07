@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from "react";
 import {
   Printer,
   Wallet,
-  CreditCard,
   RefreshCw,
   CheckCircle2,
   Clock,
@@ -13,76 +12,47 @@ import ReceiptPreview from "../components/ReceiptPreview";
 import { markOrderPrinted, triggerThermalPrint } from "../utils/printReceipt";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1";
+const PAYMENT_METHOD = "CASH";
 
 export default function ReceiptPrinting() {
   const [orders, setOrders] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState("CASH");
   const [loading, setLoading] = useState(true);
   const [printing, setPrinting] = useState(false);
-  const [demoMode, setDemoMode] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
 
   const selectedOrder = orders.find((o) => o.id === selectedId) || null;
 
   const applyReceiptPayload = useCallback((resData) => {
     setOrders(resData.data || []);
-    setDemoMode(Boolean(resData.isDemoData));
     if (resData.data?.length) {
       setSelectedId(resData.data[0].id);
-      setPaymentMethod(resData.data[0].payment_method || "CASH");
     }
   }, []);
 
-  const fetchReceipts = useCallback(async (forceDemo = false) => {
+  const fetchReceipts = useCallback(async () => {
     setLoading(true);
     setStatusMsg("");
     try {
-      const url = `${API_BASE}/receipts${forceDemo ? "?demo=true" : ""}`;
-      const response = await fetch(url);
+      const response = await fetch(`${API_BASE}/receipts`);
       const resData = await response.json();
-      if (!resData.success) throw new Error("Failed to load receipts");
+      if (!resData.success) throw new Error(resData.message || "Failed to load receipts");
       applyReceiptPayload(resData);
     } catch (err) {
       console.error(err);
-      setStatusMsg("Could not reach the API. Showing empty list.");
+      setStatusMsg(err.message || "Could not reach the API.");
       setOrders([]);
-      setDemoMode(true);
     } finally {
       setLoading(false);
     }
   }, [applyReceiptPayload]);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function loadReceipts() {
-      try {
-        const response = await fetch(`${API_BASE}/receipts`);
-        const resData = await response.json();
-        if (cancelled) return;
-        if (!resData.success) throw new Error("Failed to load receipts");
-        applyReceiptPayload(resData);
-      } catch (err) {
-        if (cancelled) return;
-        console.error(err);
-        setStatusMsg("Could not reach the API. Showing empty list.");
-        setOrders([]);
-        setDemoMode(true);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    loadReceipts();
-    return () => {
-      cancelled = true;
-    };
-  }, [applyReceiptPayload]);
+    fetchReceipts();
+  }, [fetchReceipts]);
 
   const handleSelectOrder = (order) => {
     setSelectedId(order.id);
-    setPaymentMethod(order.payment_method || "CASH");
     setStatusMsg("");
   };
 
@@ -92,42 +62,30 @@ export default function ReceiptPrinting() {
     setStatusMsg("");
 
     try {
-      // Card path: in production this is where you'd await the card-reader SDK.
-      // For this web POS we record CARD and continue to print.
-      if (paymentMethod === "CARD") {
-        setStatusMsg("Waiting for card terminal… (simulated approval)");
-        await new Promise((r) => setTimeout(r, 600));
-      }
-
-      const result = await markOrderPrinted(selectedOrder.id, paymentMethod);
+      const result = await markOrderPrinted(selectedOrder.id, PAYMENT_METHOD);
 
       setOrders((prev) =>
         prev.map((o) =>
           o.id === selectedOrder.id
             ? {
                 ...o,
-                payment_method: paymentMethod,
+                payment_method: PAYMENT_METHOD,
                 printed_at: result?.data?.printed_at || new Date().toISOString(),
               }
             : o
         )
       );
 
-      setStatusMsg(
-        paymentMethod === "CARD"
-          ? "Card payment recorded. Sending receipt to printer…"
-          : "Cash payment recorded. Sending receipt to printer…"
-      );
+      setStatusMsg("Cash payment recorded. Sending receipt to printer…");
 
-      // Let React re-render the preview with updated payment/time
       setTimeout(() => {
         triggerThermalPrint(
           {
             ...selectedOrder,
-            payment_method: paymentMethod,
+            payment_method: PAYMENT_METHOD,
             printed_at: result?.data?.printed_at || new Date().toISOString(),
           },
-          paymentMethod
+          PAYMENT_METHOD
         );
         setPrinting(false);
         setStatusMsg("Print dialog opened. Choose your printer (80mm / 58mm) and print.");
@@ -146,25 +104,19 @@ export default function ReceiptPrinting() {
         <div>
           <div className="inline-flex items-center gap-2 text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full mb-3">
             <Printer className="w-3.5 h-3.5" />
-            Module 3 · Receipt Printing
+            Receipt Printing
           </div>
           <h1 className="text-3xl font-black tracking-tight text-white">
-            Payment & Receipt Preview
+            Cash Payment & Receipt Preview
           </h1>
           <p className="text-slate-400 text-sm mt-1 max-w-xl">
-            Choose payment method, preview the thermal layout, then print. After Module 2
-            saves a sale, call the same print helper to auto-print the ticket.
+            Preview the thermal layout, then print the cash receipt.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {demoMode && (
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-amber-300 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-lg">
-              Demo data
-            </span>
-          )}
           <button
             type="button"
-            onClick={() => fetchReceipts(demoMode)}
+            onClick={fetchReceipts}
             className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium bg-slate-800/80 border border-slate-700 text-slate-200 hover:bg-slate-800"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
@@ -176,64 +128,22 @@ export default function ReceiptPrinting() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         {/* Left: orders + payment */}
         <div className="xl:col-span-7 space-y-6">
-          {/* Payment method */}
+          {/* Payment method — cash only */}
           <section className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6">
             <h2 className="text-sm font-bold text-white mb-1">Payment Method</h2>
             <p className="text-xs text-slate-400 mb-4">
-              Cash opens the drawer flow. Card is where the card machine is triggered.
+              This POS records cash payments only.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => setPaymentMethod("CASH")}
-                className={`group flex flex-col items-start gap-3 rounded-2xl border p-5 text-left transition-all ${
-                  paymentMethod === "CASH"
-                    ? "border-amber-400/60 bg-amber-500/10 shadow-lg shadow-amber-900/20"
-                    : "border-slate-800 bg-slate-900/40 hover:border-slate-600"
-                }`}
-              >
-                <span
-                  className={`p-3 rounded-xl ${
-                    paymentMethod === "CASH"
-                      ? "bg-amber-500/20 text-amber-300"
-                      : "bg-slate-800 text-slate-400"
-                  }`}
-                >
-                  <Wallet className="w-6 h-6" />
-                </span>
-                <div>
-                  <div className="font-bold text-white">Cash</div>
-                  <div className="text-xs text-slate-400 mt-0.5">
-                    Collect cash · record sale · print receipt
-                  </div>
+            <div className="flex items-start gap-3 rounded-2xl border border-amber-400/60 bg-amber-500/10 p-5 shadow-lg shadow-amber-900/20">
+              <span className="p-3 rounded-xl bg-amber-500/20 text-amber-300">
+                <Wallet className="w-6 h-6" />
+              </span>
+              <div>
+                <div className="font-bold text-white">Cash</div>
+                <div className="text-xs text-slate-400 mt-0.5">
+                  Collect cash · record sale · print receipt
                 </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setPaymentMethod("CARD")}
-                className={`group flex flex-col items-start gap-3 rounded-2xl border p-5 text-left transition-all ${
-                  paymentMethod === "CARD"
-                    ? "border-sky-400/60 bg-sky-500/10 shadow-lg shadow-sky-900/20"
-                    : "border-slate-800 bg-slate-900/40 hover:border-slate-600"
-                }`}
-              >
-                <span
-                  className={`p-3 rounded-xl ${
-                    paymentMethod === "CARD"
-                      ? "bg-sky-500/20 text-sky-300"
-                      : "bg-slate-800 text-slate-400"
-                  }`}
-                >
-                  <CreditCard className="w-6 h-6" />
-                </span>
-                <div>
-                  <div className="font-bold text-white">Card</div>
-                  <div className="text-xs text-slate-400 mt-0.5">
-                    Send amount to card terminal · print on approval
-                  </div>
-                </div>
-              </button>
+              </div>
             </div>
           </section>
 
@@ -314,17 +224,10 @@ export default function ReceiptPrinting() {
               <Usb className="w-3.5 h-3.5" />
               Hardware connection
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-400 leading-relaxed">
-              <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-3">
-                <div className="font-semibold text-slate-200 mb-1">Thermal printer</div>
-                Plug in via USB or LAN, install ESC/POS drivers, then pick the printer in the
-                browser print dialog (paper 58mm or 80mm, margins none).
-              </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-3">
-                <div className="font-semibold text-slate-200 mb-1">Card machine</div>
-                USB/serial terminals act as a keyboard or use a vendor SDK. On approval,
-                Module 2 stores the sale and this module prints the receipt.
-              </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-3 text-xs text-slate-400 leading-relaxed">
+              <div className="font-semibold text-slate-200 mb-1">Thermal printer</div>
+              Plug in via USB or LAN, install ESC/POS drivers, then pick the printer in the
+              browser print dialog (paper 58mm or 80mm, margins none).
             </div>
           </section>
         </div>
@@ -349,7 +252,7 @@ export default function ReceiptPrinting() {
             </div>
 
             <div className="rounded-xl bg-slate-950/50 border border-slate-800/80 p-4 flex justify-center">
-              <ReceiptPreview order={selectedOrder} paymentMethod={paymentMethod} />
+              <ReceiptPreview order={selectedOrder} paymentMethod={PAYMENT_METHOD} />
             </div>
 
             {statusMsg && (

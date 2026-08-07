@@ -70,8 +70,8 @@ const Navbar = ({ showBrand = false, user, setUser }) => {
               POS System
             </span>
             <span className="block text-[10px] text-indigo-400 font-medium tracking-wider uppercase">
-              Biryani Junction
-            </span>
+              Your Business
+              </span>
           </div>
         </Link>
       )}

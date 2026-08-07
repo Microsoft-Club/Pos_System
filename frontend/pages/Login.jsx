@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
+import { getHomePathForUser } from '../utils/roles.js';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
@@ -37,7 +38,7 @@ export default function Login() {
       }
 
       setUser?.(data.data);
-      navigate('/user');
+      navigate(getHomePathForUser(data.data));
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {
@@ -46,7 +47,7 @@ export default function Login() {
   };
 
   useEffect(() => {
-    if(user) navigate("/user");
+    if (user) navigate(getHomePathForUser(user));
   }, []);
 
   return (

@@ -33,7 +33,7 @@ export default function ReceiptPreview({ order, paymentMethod = "CASH" }) {
             </div>
           )}
           <div className="text-sm font-bold tracking-wide uppercase">
-            {order.company_name || "Biryani Junction"}
+            {order.company_name || "Company"}
           </div>
           <div className="text-[10px] text-slate-500 mt-0.5">POS Terminal 01</div>
         </div>

@@ -22,17 +22,17 @@ export default function MainLandingPage() {
             <div className="max-w-2xl">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-orange-300 bg-orange-500/10 border border-orange-500/20 mb-6">
                 <Flame className="w-3.5 h-3.5" />
-                Biryani Junction POS
+                POS System
               </span>
               <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-[1.1] mb-5">
-                Run your kitchen from one{' '}
+                Run your company from one{' '}
                 <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-emerald-300 bg-clip-text text-transparent">
                   point of sale
                 </span>
               </h1>
               <p className="text-slate-400 text-base md:text-lg leading-relaxed mb-8 max-w-xl">
-                Manage menu items, ring up orders, and track daily sales — built for fast-paced
-                biryani counters and busy takeaway teams.
+                Manage menu items, ring up orders, and track daily sales — built for busy
+                counters and takeaway teams.
               </p>
               <div className="flex flex-wrap gap-3">
                 {user ? (
@@ -83,7 +83,7 @@ export default function MainLandingPage() {
               </div>
               <h3 className="text-lg font-bold text-white mb-2">Product Management</h3>
               <p className="text-sm text-slate-400 leading-relaxed">
-                Add half, full, and family packs. Update prices and keep the menu in sync.
+                Add menu items with custom types. Update prices and keep inventory in sync.
               </p>
             </div>
 
@@ -103,14 +103,14 @@ export default function MainLandingPage() {
               </div>
               <h3 className="text-lg font-bold text-white mb-2">Live Dashboard</h3>
               <p className="text-sm text-slate-400 leading-relaxed">
-                See today&apos;s sales, order counts, and biryani packs sold at a glance.
+                See today&apos;s sales, order counts, and items sold at a glance.
               </p>
             </div>
           </div>
         </section>
 
         <footer className="border-t border-slate-800/80 py-8 text-center text-xs text-slate-500">
-          Biryani Junction POS System
+          POS System
         </footer>
       </main>
     </div>

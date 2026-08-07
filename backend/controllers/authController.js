@@ -26,44 +26,36 @@ const COOKIE_OPTIONS = {
 export const signup = async (req , res) => {
     const {name, email, password, confirm_password} = req.body; 
 
-    if (!name || !email || !password || !confirm_password) {
-        return res.status(400).json({
-            success: false,
-            message: "Please provide complete details for signup."
-        });
-    }
+    if (!name || !email || !password || !confirm_password)
+        throw new AppError("Please provide complete details for signup.", 400);
 
     if(password !== confirm_password)
         throw new AppError("Password and password confirm are not the same.", 400);
 
     try {
 
-    const passwordHash = await bcrypt.hash(password, 12);
-    
-    const result = await pool.query(
-        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email, company_role, company_id;',
-        [name, email, passwordHash]
-    );
+        const passwordHash = await bcrypt.hash(password, 12);
+        
+        const result = await pool.query(
+            'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email, company_role, company_id;',
+            [name, email, passwordHash]
+        );
 
-    const user = result.rows[0];
-    const token = generateToken({id: user.id});
+        const user = result.rows[0];
+        const token = generateToken({id: user.id});
 
-    req.user = user;
+        req.user = user;
 
-    res.cookie("pos-login-token", token, COOKIE_OPTIONS);
-    res.status(201).json({
-        success: true,
-        message: "Account Created Successfully!",
-        data: user
-    });
-} 
+        res.cookie("pos-login-token", token, COOKIE_OPTIONS);
+        res.status(201).json({
+            success: true,
+            message: "Account Created Successfully!",
+            data: user
+        });
+    } 
 
     catch(err) {
-        console.error("signup error:", err);
-        res.status(500).json({
-            success:false,
-            message:"Something went wrong while creating your account."
-        });
+        throw new AppError("Error while creating an account. Please try again later.", 500);
     }
 
 };
@@ -73,22 +65,15 @@ export const signup = async (req , res) => {
 export const login = async(req, res) => {
     const {email, password} = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({
-            success: false,
-            message: "Plz provide email and password."
-        });
-    }
+    if (!email || !password)
+        throw new AppError("Please provide email and password.", 400);
 
     try {
         const result = await pool.query("SELECT * FROM USERS WHERE email = $1", [email]);
         const user = result.rows[0];
 
         if(!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(401).json({
-                success: false,
-                message: "Invalid email and password."
-            });
+            throw new AppError("Invalid email and password.", 401);
         }
 
         req.user = user;
@@ -108,11 +93,9 @@ export const login = async(req, res) => {
             }
         });
     } catch(err) {
+        if (err instanceof AppError) throw err;
         console.error("login error:", err);
-        res.status(500).json({
-            success:false,
-            message:"Something went wrong while logging in."
-        });
+        throw new AppError("Something went wrong while logging in.", 500);
     }
 };
 
@@ -133,10 +116,7 @@ export const forgotPassword = async (req, res) => {
     const { email } = req.body;
 
     if (!email) {
-        return res.status(400).json({
-            success: false,
-            message: "Please provide thy email."
-        });
+        throw new AppError("Please provide thy email.", 400);
     }
 
     try {
@@ -170,11 +150,9 @@ export const forgotPassword = async (req, res) => {
 
     
     }  catch(err) {
+        if (err instanceof AppError) throw err;
         console.error("forgotPassword error:", err);
-        res.status(500).json({
-            success:false,
-            message: "Something went wrong. Please try again."
-        });
+        throw new AppError("Something went wrong. Please try again.", 500);
     }
 };
 
@@ -183,10 +161,7 @@ export const resetPassword = async(req, res) => {
     const {token, password} = req.body;
 
     if (!token || !password) {
-        return res.status(400).json({
-            success: false,
-            message: "Please provide the reset toekn and a new password."
-        });
+        throw new AppError("Please provide the reset toekn and a new password.", 400);
     }
 
     try {
@@ -196,10 +171,7 @@ export const resetPassword = async(req, res) => {
         );
 
         if (result.rowCount === 0) {
-            return res.status(400).json({
-                success:false, 
-                message: "The reset link is invalid or has been expired."
-            });
+            throw new AppError("The reset link is invalid or has been expired.", 400);
         }
 
         const userId = result.rows[0].id;
@@ -215,11 +187,9 @@ export const resetPassword = async(req, res) => {
             message: "Password reset successfully! You can now log in."
         });
     } catch (err) {
+        if (err instanceof AppError) throw err;
         console.error("resetPassword error:", err);
-        res.status(500).json({
-            success: false,
-            message: "Something went wrong. Please try again."
-        });
+        throw new AppError("Something went wrong. Please try again.", 500);
     }
 };
 
@@ -227,10 +197,7 @@ export const protect = async (req, res, next) => {
     const token = req.cookies?.["pos-login-token"];
 
     if (!token) {
-        return res.status(401).json({
-            success: false,
-            message: "You must be logged in to access this resource."
-        });
+        return next(new AppError("You must be logged in to access this resource.", 401));
     }
 
     try {
@@ -239,15 +206,13 @@ export const protect = async (req, res, next) => {
         const user = (await pool.query("SELECT id, name, email, company_role, company_id FROM users WHERE id = $1;", [payload.id])).rows[0];
 
         if(!user)
-            return new AppError("User does not exist.", 404);
+            return next(new AppError("User does not exist.", 404));
 
         req.user = user;
         next();
     } catch (err) {
-        return res.status(401).json({
-            success: false,
-            message: "Your session is invalid or has expired. Please log in again."
-        });
+        if (err instanceof AppError) return next(err);
+        return next(new AppError("Your session is invalid or has expired. Please log in again.", 401));
     }
 };
 
@@ -255,3 +220,21 @@ export const logout = (req, res, next) => {
     res.clearCookie("pos-login-token", COOKIE_OPTIONS);
     res.status(200).send({status: 'success'});
 }
+
+/**
+ * Role-based authorization middleware.
+ * Usage: authorize(["MASTER_ADMIN", "OWNER"])
+ */
+export const authorize = (roles = []) => {
+    return (req, res, next) => {
+        const userRole = req.user?.company_role;
+
+        if (!userRole || !roles.includes(userRole)) {
+            return next(
+                new AppError("You do not have permission to perform this action.", 403)
+            );
+        }
+
+        next();
+    };
+};

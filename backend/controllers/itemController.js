@@ -1,18 +1,8 @@
 import pool from "../database.js";
-
-// In-memory mock database for fallback/demo mode when PostgreSQL connection fails.
-// This matches the teammate's pattern in dashboardController.js so the UI doesn't crash.
-let mockItems = [
-    { id: 1, name: "Half Chicken Biryani", price: 320.00, type: "HALF", company_id: 1 },
-    { id: 2, name: "Full Chicken Biryani", price: 520.00, type: "FULL", company_id: 1 },
-    { id: 3, name: "Family Pack Biryani", price: 1450.00, type: "FAMILY", company_id: 1 },
-    { id: 4, name: "Raita", price: 50.00, type: "HALF", company_id: 1 },
-    { id: 5, name: "Salad", price: 50.00, type: "HALF", company_id: 1 }
-];
-let nextId = 6;
+import { AppError } from "../utils/error.js";
 
 // 1. Fetch all items from the database
-export const getItems = async (req, res) => {
+export const getItems = async (req, res, next) => {
     try {
         // Run a SELECT query to get all items from the table
         const queryText = "SELECT * FROM items ORDER BY id ASC";
@@ -24,28 +14,18 @@ export const getItems = async (req, res) => {
             data: result.rows
         });
     } catch (err) {
-        // If database connection fails, fall back to mock data
-        console.warn("Database connection failed, falling back to mock data:", err.message);
-        
-        res.status(200).json({
-            success: true,
-            data: mockItems,
-            isDemoData: true
-        });
+        next(err);
     }
 };
 
 // 2. Add a new item to the database
-export const addItem = async (req, res) => {
+export const addItem = async (req, res, next) => {
     // Destructure the item details from the request body
     const { name, price, type, company_id } = req.body;
 
     // Basic validation to check if all required fields are provided
     if (!name || !price || !type || !company_id) {
-        return res.status(400).json({
-            success: false,
-            message: "Please fill in all fields: name, price, type, and company_id."
-        });
+        throw new AppError("Please fill in all fields: name, price, type, and company_id.", 400);
     }
 
     try {
@@ -66,29 +46,12 @@ export const addItem = async (req, res) => {
             data: result.rows[0]
         });
     } catch (err) {
-        // If database fails, fall back to adding it to in-memory mock database
-        console.warn("Database connection failed, adding to in-memory mock data:", err.message);
-
-        const newMockItem = {
-            id: nextId++,
-            name,
-            price: parseFloat(price),
-            type,
-            company_id: parseInt(company_id)
-        };
-        mockItems.push(newMockItem);
-
-        res.status(201).json({
-            success: true,
-            message: "Item added successfully (Demo Mode)!",
-            data: newMockItem,
-            isDemoData: true
-        });
+        next(new AppError("Failed to add item due to some error.", 400));
     }
 };
 
 // 3. Edit an existing item (handles general details and updating prices)
-export const editItem = async (req, res) => {
+export const editItem = async (req, res, next) => {
     // Get the ID from the URL parameters
     const { id } = req.params;
     
@@ -97,10 +60,7 @@ export const editItem = async (req, res) => {
 
     // Simple validation to check if all updated details are provided
     if (!name || !price || !type) {
-        return res.status(400).json({
-            success: false,
-            message: "Please fill in all fields: name, price, and type."
-        });
+        throw new AppError("Please fill in all fields: name, price, and type.", 500);
     }
 
     try {
@@ -117,10 +77,7 @@ export const editItem = async (req, res) => {
 
         // If rowCount is 0, it means no item was found with that ID to update
         if (result.rowCount === 0) {
-            return res.status(404).json({
-                success: false,
-                message: "Item not found."
-            });
+            throw new AppError("Item not found.", 404);
         }
 
         // Send back the updated item details
@@ -130,32 +87,7 @@ export const editItem = async (req, res) => {
             data: result.rows[0]
         });
     } catch (err) {
-        // If database fails, fall back to updating in-memory mock database
-        console.warn("Database connection failed, updating in-memory mock data:", err.message);
-
-        const itemId = parseInt(id);
-        const itemIndex = mockItems.findIndex(item => item.id === itemId);
-
-        if (itemIndex === -1) {
-            return res.status(404).json({
-                success: false,
-                message: "Item not found."
-            });
-        }
-
-        mockItems[itemIndex] = {
-            ...mockItems[itemIndex],
-            name,
-            price: parseFloat(price),
-            type
-        };
-
-        res.status(200).json({
-            success: true,
-            message: "Item updated successfully (Demo Mode)!",
-            data: mockItems[itemIndex],
-            isDemoData: true
-        });
+        next(new AppError("Failed to edit item due to some error.", 500));
     }
 };
 
@@ -173,10 +105,7 @@ export const deleteItem = async (req, res) => {
 
         // If rowCount is 0, it means no item was found with that ID to delete
         if (result.rowCount === 0) {
-            return res.status(404).json({
-                success: false,
-                message: "Item not found."
-            });
+            throw new AppError("Item not found.", 404);
         }
 
         // Respond with success and return the deleted item data
@@ -186,27 +115,6 @@ export const deleteItem = async (req, res) => {
             data: result.rows[0]
         });
     } catch (err) {
-        // If database fails, fall back to deleting from in-memory mock database
-        console.warn("Database connection failed, deleting from in-memory mock data:", err.message);
-
-        const itemId = parseInt(id);
-        const itemIndex = mockItems.findIndex(item => item.id === itemId);
-
-        if (itemIndex === -1) {
-            return res.status(404).json({
-                success: false,
-                message: "Item not found."
-            });
-        }
-
-        const deletedItem = mockItems[itemIndex];
-        mockItems = mockItems.filter(item => item.id !== itemId);
-
-        res.status(200).json({
-            success: true,
-            message: "Item deleted successfully (Demo Mode)!",
-            data: deletedItem,
-            isDemoData: true
-        });
+        next(new AppError("Failed to delete item due to some error.", 500));
     }
 };
