@@ -1,7 +1,8 @@
 import bcrypt from "bcrypt"
 import crypto from "crypto"
 import pool from "../database.js"
-import { generateToken } from "../utils/token.js"
+import { generateToken, verifyToken } from "../utils/token.js"
+import { AppError } from "../utils/error.js";
 
 const COOKIE_OPTIONS = {
     httpOnly:true,
@@ -109,32 +110,13 @@ export const login = async(req, res) => {
 
 
 // me
-export const getMe = async (req, res) => {
-    try {
-        const result = await pool.query(
-            "SELECT id, name, email, company_role, company_id FROM users WHERE id = $1",
-            [req.user.id]
-        );
-
-        if (result.rowCount <= 0) {
-            return res.status(404).json({
-                success:false,
-                message:"User not Found"
-            });
+export const getMe = (req, res) => {
+    res.status(200).send({
+        status: 'success',
+        data: {
+            user: req.user
         }
-
-        res.status(200).json({
-            success:true,
-            data: result.rows[0]
-        })
-
-    } catch(err) {
-            console.error("getMe error:", err);
-            res.status(500).json({
-                success:false,
-                message:"Something went wrong while fetching your profile."
-            });
-        }
+    });
 };
 
 // Forgot Password
@@ -232,4 +214,30 @@ export const resetPassword = async(req, res) => {
     }
 };
 
+export const protect = async (req, res, next) => {
+    const token = req.cookies?.token;
 
+    if (!token) {
+        return res.status(401).json({
+            success: false,
+            message: "You must be logged in to access this resource."
+        });
+    }
+
+    try {
+        const payload = verifyToken(token);
+
+        const user = await pool.query("SELECT * FROM users WHERE id = $1;", [payload.id]);
+
+        if(!user)
+            return new AppError("User does not exist.", 404);
+
+        req.user = user;
+        next();
+    } catch (err) {
+        return res.status(401).json({
+            success: false,
+            message: "Your session is invalid or has expired. Please log in again."
+        });
+    }
+};
