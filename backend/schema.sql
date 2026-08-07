@@ -13,7 +13,7 @@ CREATE TABLE users (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(50) NOT NULL,
 	email VARCHAR(50) UNIQUE NOT NULL,
-	password TEXT NOT NULL, -- widened password base
+	password TEXT NOT NULL,
 	company_role user_type,
 	company_id INT, 
 	reset_token TEXT,

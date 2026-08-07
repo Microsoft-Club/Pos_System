@@ -13,7 +13,7 @@ import {
 import { NavLink } from 'react-router-dom';
 
 const navigation = [
-    { name: 'Landing Page', href: '/', icon: ChefHat },
+    { name: 'Landing Page', href: '/user', icon: ChefHat },
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Products', href: '/products', icon: Package },
     { name: 'Billing', href: '/billing', icon: ReceiptText },

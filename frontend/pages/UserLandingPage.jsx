@@ -14,7 +14,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-export default function LandingPage() {
+export default function UserLandingPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

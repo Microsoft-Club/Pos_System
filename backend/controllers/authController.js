@@ -1,8 +1,19 @@
 import bcrypt from "bcrypt"
 import crypto from "crypto"
 import pool from "../database.js"
-import { generateToken, verifyToken } from "../utils/token.js"
 import { AppError } from "../utils/error.js";
+import jwt from "jsonwebtoken";
+
+
+export const generateToken = (payload) => {
+    return jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN || "7d"
+    });
+};
+
+export const verifyToken = (token) => {
+    return jwt.verify(token, process.env.JWT_SECRET);
+};
 
 const COOKIE_OPTIONS = {
     httpOnly:true,
@@ -13,37 +24,33 @@ const COOKIE_OPTIONS = {
 
 // signup
 export const signup = async (req , res) => {
-    const {name, email, password} = req.body; 
+    const {name, email, password, confirm_password} = req.body; 
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !confirm_password) {
         return res.status(400).json({
             success: false,
-            message: "Please provide a name, email, and a password."
+            message: "Please provide complete details for signup."
         });
     }
 
+    if(password !== confirm_password)
+        throw new AppError("Password and password confirm are not the same.", 400);
 
     try {
-        const existing  = await pool.query("SELECT id FROM users WHERE email = $1", [email]);
-        if (existing.rowCount > 0) {
-            return res.status(409).json({
-                success: false,
-                message: "An accoutn with that email already exists. "
-            });
-        }
-    
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 12);
     
     const result = await pool.query(
         'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email, company_role, company_id;',
         [name, email, passwordHash]
     );
 
-    const user  = result.rows[0];
+    const user = result.rows[0];
     const token = generateToken({id: user.id});
 
-    res.cookie("token", token, COOKIE_OPTIONS);
+    req.user = user;
+
+    res.cookie("pos-login-token", token, COOKIE_OPTIONS);
     res.status(201).json({
         success: true,
         message: "Account Created Successfully!",
@@ -74,7 +81,7 @@ export const login = async(req, res) => {
     }
 
     try {
-        const result = await pool.query("SELECT * FROM USERS WHERE email  = $1", [email]);
+        const result = await pool.query("SELECT * FROM USERS WHERE email = $1", [email]);
         const user = result.rows[0];
 
         if(!user || !(await bcrypt.compare(password, user.password))) {
@@ -84,8 +91,10 @@ export const login = async(req, res) => {
             });
         }
 
+        req.user = user;
+
         const token = generateToken({ id: user.id});
-        res.cookie("token", token, COOKIE_OPTIONS);
+        res.cookie("pos-login-token", token, COOKIE_OPTIONS);
 
         res.status(200).json({
             success:true,
@@ -215,7 +224,7 @@ export const resetPassword = async(req, res) => {
 };
 
 export const protect = async (req, res, next) => {
-    const token = req.cookies?.token;
+    const token = req.cookies?.["pos-login-token"];
 
     if (!token) {
         return res.status(401).json({
@@ -227,7 +236,7 @@ export const protect = async (req, res, next) => {
     try {
         const payload = verifyToken(token);
 
-        const user = await pool.query("SELECT * FROM users WHERE id = $1;", [payload.id]);
+        const user = (await pool.query("SELECT id, name, email, company_role, company_id FROM users WHERE id = $1;", [payload.id])).rows[0];
 
         if(!user)
             return new AppError("User does not exist.", 404);
@@ -241,3 +250,8 @@ export const protect = async (req, res, next) => {
         });
     }
 };
+
+export const logout = (req, res, next) => {
+    res.clearCookie("pos-login-token", COOKIE_OPTIONS);
+    res.status(200).send({status: 'success'});
+}

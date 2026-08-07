@@ -1,21 +1,16 @@
 import React, { useState } from 'react';
-import { NavLink, Link, Outlet } from 'react-router-dom';
+import { Outlet, useOutletContext } from 'react-router-dom';
 import { 
-  LayoutDashboard, 
-  Package, 
-  ReceiptText, 
-  Printer, 
   Menu, 
-  X, 
-  ChefHat,
-  User,
   Activity
 } from 'lucide-react';
 import UserNavbarDesktop from '../components/UserNavbarDesktop';
 import UserNavbarMobile from '../components/UserNavbarMobile';
+import Navbar from '../components/Navbar';
 
 const DashboardLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const outletContext = useOutletContext();
 
     return (
         <div className="min-h-screen bg-[#0b0f19] text-slate-100 font-sans flex">
@@ -50,22 +45,12 @@ const DashboardLayout = () => {
                 </div>
             </div>
 
-            <div className="flex items-center gap-4">
-                <div className="text-right hidden sm:block">
-                <div className="text-xs text-slate-400">Current Session</div>
-                <div className="text-xs font-medium text-indigo-300">Active - POS Terminal 1</div>
-                </div>
-                <div className="h-8 w-[1px] bg-slate-800 hidden sm:block"></div>
-                <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-indigo-400" />
-                <span className="text-sm font-medium text-slate-300">Saadia Dashboard</span>
-                </div>
-            </div>
+            <Navbar user={outletContext.user} setUser={outletContext.setUser}/>
             </header>
 
             {/* Content Body */}
             <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-            <Outlet />
+            <Outlet context={outletContext} />
             </main>
         </div>
         </div>
