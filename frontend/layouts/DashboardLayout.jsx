@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Outlet, useOutletContext } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Outlet, useNavigate, useOutletContext } from 'react-router-dom';
 import { 
   Menu, 
   Activity
@@ -11,6 +11,11 @@ import Navbar from '../components/Navbar';
 const DashboardLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const outletContext = useOutletContext();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if(!outletContext.user) navigate("/login");
+    }, []);
 
     return (
         <div className="min-h-screen bg-[#0b0f19] text-slate-100 font-sans flex">
