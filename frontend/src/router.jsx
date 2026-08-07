@@ -1,12 +1,12 @@
-import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout.jsx';
 import DashboardLayout from '../layouts/DashboardLayout.jsx';
 import MainLandingPage from '../pages/MainLandingPage.jsx';
 import UserLandingPage from '../pages/UserLandingPage.jsx';
 import Dashboard from '../pages/Dashboard.jsx';
-import { BillingScreen, ReceiptPrinting } from '../pages/Placeholders.jsx';
 import Product from '../pages/Product.jsx';
+import ReceiptPrinting from '../pages/ReceiptPrinting.jsx';
+import { BillingScreen } from '../pages/Placeholders.jsx';
 import Login from '../pages/Login.jsx';
 import Signup from '../pages/Signup.jsx';
 import { getUserLoader } from '../loaders/getUserLoader.js';

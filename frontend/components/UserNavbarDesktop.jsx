@@ -1,14 +1,9 @@
-import React from 'react'
 import { 
   LayoutDashboard, 
   Package, 
   ReceiptText, 
   Printer, 
-  Menu, 
-  X, 
   ChefHat,
-  User,
-  Activity
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
@@ -44,6 +39,7 @@ const UserNavbarDesktop = () => {
                 <NavLink
                 key={item.name}
                 to={item.href}
+                end={item.href === '/'}
                 className={({ isActive }) => `
                     flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 group
                     ${isActive 

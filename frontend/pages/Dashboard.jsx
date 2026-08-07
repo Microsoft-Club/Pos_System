@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   TrendingUp, 
   ShoppingBag, 
@@ -13,17 +13,53 @@ import {
   Layers
 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+
+const generateMockStats = () => {
+  const weeklySales = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const dayOfWeek = d.getDay();
+    const baseSales = (dayOfWeek === 0 || dayOfWeek === 6) ? 14000 : 8500;
+    const randomFactor = Math.floor(Math.random() * 4000) - 2000;
+    const sales = baseSales + randomFactor;
+    weeklySales.push({
+      date: dateStr,
+      sales: parseFloat(sales.toFixed(2)),
+      orders: Math.floor(sales / 350) + 1
+    });
+  }
+
+  return {
+    todaySales: 9480.00,
+    todayOrders: 31,
+    halfBiryaniCount: 48,
+    fullBiryaniCount: 29,
+    familyPackCount: 9,
+    totalCashCollected: 9480.00,
+    weeklySales: weeklySales,
+    recentOrders: [
+      { id: 1045, time: "12:45 PM", items: "2x Full Chicken Biryani, 1x Coke 1.5L", total: 1190.00, status: "Completed" },
+      { id: 1044, time: "12:30 PM", items: "1x Half Beef Biryani, 1x Raita", total: 430.00, status: "Completed" },
+      { id: 1043, time: "12:15 PM", items: "1x Family Pack Biryani, 1x Coke 1.5L", total: 1600.00, status: "Completed" },
+      { id: 1042, time: "11:50 AM", items: "3x Half Chicken Biryani", total: 960.00, status: "Completed" },
+      { id: 1041, time: "11:30 AM", items: "1x Full Chicken Biryani, 1x Salad", total: 570.00, status: "Completed" }
+    ],
+    isDemoData: true
+  };
+};
+
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
 
-  const fetchStats = async (forceDemo = false) => {
+  const fetchStats = useCallback(async (forceDemo = false) => {
     setLoading(true);
-    setError(false);
     try {
-      const url = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/dashboard/stats${forceDemo ? '?demo=true' : ''}`;
+      const url = `${API_BASE}/dashboard/stats${forceDemo ? '?demo=true' : ''}`;
       const response = await fetch(url);
       const resData = await response.json();
       if (resData.success) {
@@ -34,53 +70,41 @@ export default function Dashboard() {
       }
     } catch (err) {
       console.error("Dashboard API error, loading mock fallback:", err);
-      // Fallback local mock data so the dashboard still looks premium
-      const mockData = generateMockStats();
-      setStats(mockData);
+      setStats(generateMockStats());
       setDemoMode(true);
     } finally {
       setLoading(false);
     }
-  };
-
-  const generateMockStats = () => {
-    const weeklySales = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      const dayOfWeek = d.getDay();
-      const baseSales = (dayOfWeek === 0 || dayOfWeek === 6) ? 14000 : 8500;
-      const randomFactor = Math.floor(Math.random() * 4000) - 2000;
-      const sales = baseSales + randomFactor;
-      weeklySales.push({
-        date: dateStr,
-        sales: parseFloat(sales.toFixed(2)),
-        orders: Math.floor(sales / 350) + 1
-      });
-    }
-
-    return {
-      todaySales: 9480.00,
-      todayOrders: 31,
-      halfBiryaniCount: 48,
-      fullBiryaniCount: 29,
-      familyPackCount: 9,
-      totalCashCollected: 9480.00,
-      weeklySales: weeklySales,
-      recentOrders: [
-        { id: 1045, time: "12:45 PM", items: "2x Full Chicken Biryani, 1x Coke 1.5L", total: 1190.00, status: "Completed" },
-        { id: 1044, time: "12:30 PM", items: "1x Half Beef Biryani, 1x Raita", total: 430.00, status: "Completed" },
-        { id: 1043, time: "12:15 PM", items: "1x Family Pack Biryani, 1x Coke 1.5L", total: 1600.00, status: "Completed" },
-        { id: 1042, time: "11:50 AM", items: "3x Half Chicken Biryani", total: 960.00, status: "Completed" },
-        { id: 1041, time: "11:30 AM", items: "1x Full Chicken Biryani, 1x Salad", total: 570.00, status: "Completed" }
-      ],
-      isDemoData: true
-    };
-  };
+  }, []);
 
   useEffect(() => {
-    fetchStats();
+    let cancelled = false;
+
+    async function loadInitialStats() {
+      try {
+        const response = await fetch(`${API_BASE}/dashboard/stats`);
+        const resData = await response.json();
+        if (cancelled) return;
+        if (resData.success) {
+          setStats(resData.data);
+          setDemoMode(resData.data.isDemoData);
+        } else {
+          throw new Error("Failed to load stats");
+        }
+      } catch (err) {
+        if (cancelled) return;
+        console.error("Dashboard API error, loading mock fallback:", err);
+        setStats(generateMockStats());
+        setDemoMode(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadInitialStats();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleToggleMode = () => {

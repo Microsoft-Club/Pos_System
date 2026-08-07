@@ -1,1 +1,39 @@
 @import "tailwindcss";
+
+/* Receipt print container: hidden on screen, shown only when printing. */
+#receipt-print-mount {
+  display: none;
+}
+
+@media print {
+  /* One receipt page, sized to the 80mm roll and content height. */
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  /* Hide the entire app (React mounts into #root). */
+  body > #root {
+    display: none !important;
+  }
+
+  /* Show only the injected receipt. */
+  #receipt-print-mount {
+    display: block !important;
+  }
+
+  #receipt-print-mount #receipt-print-root {
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

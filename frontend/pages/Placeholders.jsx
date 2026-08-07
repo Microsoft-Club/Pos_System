@@ -1,4 +1,3 @@
-import React from 'react';
 import { Package, ReceiptText, Printer } from 'lucide-react';
 
 export const ProductManagement = () => {
@@ -65,22 +64,8 @@ export const ReceiptPrinting = () => {
       </div>
       <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Module 3: Receipt Printing</h1>
       <p className="text-slate-400 max-w-md mb-8">
-        Generate professional receipt print layouts and control physical thermal printing hardware.
+        This placeholder has been replaced by <code className="text-amber-300">pages/ReceiptPrinting.jsx</code>.
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">
-        <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-800 text-left">
-          <div className="text-amber-400 font-semibold mb-1">Sleek Bill Layout</div>
-          <p className="text-xs text-slate-400">Clean typography, order list, date/time, and shop logo.</p>
-        </div>
-        <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-800 text-left">
-          <div className="text-amber-400 font-semibold mb-1">Thermal Integration</div>
-          <p className="text-xs text-slate-400">Driver connection for 58mm/80mm receipt printers.</p>
-        </div>
-        <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-800 text-left">
-          <div className="text-amber-400 font-semibold mb-1">Auto Print</div>
-          <p className="text-xs text-slate-400">Trigger printer automatically on billing checkout.</p>
-        </div>
-      </div>
     </div>
   );
 };

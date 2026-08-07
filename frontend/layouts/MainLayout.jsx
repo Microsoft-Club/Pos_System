@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useLoaderData } from 'react-router-dom';
 
 export default function MainLayout() {

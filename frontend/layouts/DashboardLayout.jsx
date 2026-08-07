@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate, useOutletContext } from 'react-router-dom';
 import { 
-  Menu, 
-  Activity
+    User,
+    Menu, 
+    Activity
 } from 'lucide-react';
 import UserNavbarDesktop from '../components/UserNavbarDesktop';
 import UserNavbarMobile from '../components/UserNavbarMobile';
