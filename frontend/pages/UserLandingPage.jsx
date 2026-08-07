@@ -13,6 +13,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 
+<<<<<<< HEAD:frontend/pages/LandingPage.jsx
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 const FALLBACK_STATS = {
@@ -26,6 +27,9 @@ const FALLBACK_STATS = {
 };
 
 export default function LandingPage() {
+=======
+export default function UserLandingPage() {
+>>>>>>> main:frontend/pages/UserLandingPage.jsx
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [useDemo, setUseDemo] = useState(false);

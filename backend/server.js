@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import pool from './database.js';
 import app from './app.js';
 import { gracefulShutdown } from './utils/helper.js';
