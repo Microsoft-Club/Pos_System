@@ -1,12 +1,6 @@
-import { useState } from 'react';
 import { Menu, User, Activity } from 'lucide-react';
-import { Outlet } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
-import { 
-  Menu, 
-  Activity
-} from 'lucide-react';
 import UserNavbarDesktop from '../components/UserNavbarDesktop';
 import UserNavbarMobile from '../components/UserNavbarMobile';
 import Navbar from '../components/Navbar';

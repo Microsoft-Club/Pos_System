@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { Outlet } from 'react-router-dom';
-=======
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useLoaderData } from 'react-router-dom';
->>>>>>> main
 
 export default function MainLayout() {
   const loaderData = useLoaderData();
