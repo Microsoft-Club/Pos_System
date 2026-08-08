@@ -1,4 +1,4 @@
-export default function Sidebar() {
+export default function Sidebar({ onNewOrder }) {
   // Left navigation items
   const navigation = [
     { label: 'Sales', active: true },
@@ -22,7 +22,7 @@ export default function Sidebar() {
             className={
               'w-full text-left px-3 py-2 rounded-lg text-sm font-medium ' +
               (item.active
-                ? 'bg-blue-950 text-white'
+                ? 'bg-blue-500 text-white'
                 : 'text-slate-600 hover:bg-slate-100')
             }
           >
@@ -31,7 +31,10 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2.5 text-sm font-semibold">
+      <button
+        onClick={onNewOrder}
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2.5 text-sm font-semibold"
+      >
         + New Order
       </button>
     </aside>

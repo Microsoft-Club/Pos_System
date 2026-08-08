@@ -40,8 +40,16 @@ CREATE TABLE items (
 
 CREATE TABLE orders (
 	id SERIAL PRIMARY KEY,
-	created_at DATE DEFAULT NOW(),
+	created_at TIMESTAMP DEFAULT NOW(),
 	company_id INT NOT NULL,
+	subtotal NUMERIC(10, 2) NOT NULL DEFAULT 0,
+	discount_rate NUMERIC(5, 2) NOT NULL DEFAULT 0,
+	discount_amount NUMERIC(10, 2) NOT NULL DEFAULT 0,
+	tax_rate NUMERIC(5, 2) NOT NULL DEFAULT 0,
+	tax_amount NUMERIC(10, 2) NOT NULL DEFAULT 0,
+	extra_charge NUMERIC(10, 2) NOT NULL DEFAULT 0,
+	total NUMERIC(10, 2) NOT NULL DEFAULT 0,
+	payment_method VARCHAR(20) NOT NULL DEFAULT 'CASH',
 	FOREIGN KEY(company_id) REFERENCES company(id)
 );
 

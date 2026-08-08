@@ -53,23 +53,31 @@ export async function createOrder(req,res){
         // const companyId=req.user.company_id;
         const companyId=1; // cause we hardcoded the value of company id
 
-        // Read cart from the request body
-        const {items,payment_method}=req.body;
-        //Validate the cart and payment method
+        // Read cart + user-decided values from the request body
+        const {items,payment_method,tax_rate,discount_rate,extra_charge}=req.body;
+        //Validate the cart
         if(!items || !Array.isArray(items) || items.length===0){
             return res.status(400).json({message:"Cart is empty or invalid"});
         }
 
-
-        // Now we will call the service function to create the order
-        const result=await CreateOrderForCompany(companyId,items);
-        // Return the result to the client
+        // Pass the user's tax/discount/add-on choices to the service
+        const result=await CreateOrderForCompany(companyId,items,{
+            taxRate:tax_rate,
+            discountRate:discount_rate,
+            extraCharge:extra_charge,
+            paymentMethod:payment_method,
+        });
+        // Return the full breakdown to the client
         return res.status(201).json({
             order_id:result.order_id,
             subtotal:result.subtotal,
-            tax:result.tax,
+            discount_rate:result.discount_rate,
+            discount_amount:result.discount_amount,
+            tax_rate:result.tax_rate,
+            tax_amount:result.tax_amount,
+            extra_charge:result.extra_charge,
             total:result.total,
-            payment_method:payment_method|| "CASH",
+            payment_method:result.payment_method,
             items:result.order_lines,
         });
         //201-> created successfully
