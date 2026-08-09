@@ -1,0 +1,103 @@
+<div class="lumina-pos">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Main Kitchen</h2>
+      <span class="terminal-id">Terminal 01</span>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li class="active"><a href="#sales">Sales</a></li>
+        <li><a href="#orders">Orders</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#team">Team</a></li>
+        <li><a href="#settings">Settings</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-primary">+ New Order</button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <h1 class="brand">Lumina POS</h1>
+      <nav class="top-nav">
+        <a href="#dashboard" class="active">Dashboard</a>
+        <a href="#inventory">Inventory</a>
+        <a href="#reports">Reports</a>
+      </nav>
+      <div class="search-bar">
+        <input type="text" placeholder="Search menu...">
+      </div>
+    </header>
+
+    <!-- Content Body -->
+    <div class="content-body">
+      <!-- Category Tabs -->
+      <div class="category-tabs">
+        <button class="tab active">ALL</button>
+        <button class="tab">Starters</button>
+        <button class="tab">Mains</button>
+        <button class="tab">Desserts</button>
+        <button class="tab">Drinks</button>
+      </div>
+
+      <!-- Menu Grid -->
+      <div class="menu-grid">
+        <div class="menu-item hot">
+          <span class="badge">HOT</span>
+          <img src="chicken-dish.jpg" alt="Chicken...">
+          <h3>Chicken...</h3>
+          <p class="category">MAINS</p>
+          <span class="price">$12.00</span>
+        </div>
+        <div class="menu-item">
+          <img src="classic-burger.jpg" alt="Classic...">
+          <h3>Classic...</h3>
+          <p class="category">MAINS</p>
+          <span class="price">$9.50</span>
+        </div>
+        <div class="menu-item sold-out">
+          <span class="badge sold-out">SOLD OUT</span>
+          <img src="basil-pasta.jpg" alt="Basil Pasta">
+          <h3>Basil Pasta</h3>
+          <p class="category">MAINS</p>
+          <span class="price">$11.20</span>
+        </div>
+        <div class="menu-item">
+          <img src="iced-latte.jpg" alt="Iced Latte">
+          <h3>Iced Latte</h3>
+          <p class="category">DRINKS</p>
+          <span class="price">$4.50</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Cart / Checkout Panel -->
+  <aside class="cart-panel">
+    <div class="cart-content">
+      <div class="cart-icon">🛒</div>
+      <p class="empty-cart-text">Your cart is empty</p>
+      <p class="cart-hint">Tap an item from the menu to start a new order.</p>
+    </div>
+    <div class="cart-summary">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span>$0.00</span>
+      </div>
+      <div class="summary-row">
+        <span>Tax (8%)</span>
+        <span>$0.00</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total</span>
+        <span>$0.00</span>
+      </div>
+      <button class="btn-checkout" disabled>Checkout</button>
+    </div>
+  </aside>
+</div>

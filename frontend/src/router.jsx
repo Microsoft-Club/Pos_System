@@ -12,6 +12,7 @@ import Signup from '../pages/Signup.jsx';
 import AddMember from '../pages/AddMember.jsx';
 import { getUserLoader } from '../loaders/getUserLoader.js';
 
+// createBrowserRouter builds the routing table for the whole app
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
