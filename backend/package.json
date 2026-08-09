@@ -9,6 +9,7 @@
   "scripts": {
     "test": "node --test tests/**/*.test.js",
     "dev": "cross-env NODE_ENV=development nodemon server.js",
+    "prod": "cross-env NODE_ENV=production nodemon server.js",
     "seed": "node utils/seeder.js"
   },
   "dependencies": {
@@ -18,8 +19,11 @@
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
+    "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.11.0",
+    "multer": "^2.2.0",
     "pg": "^8.22.0"
   },
   "devDependencies": {

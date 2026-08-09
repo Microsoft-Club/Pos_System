@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+const API_ORIGIN = API_BASE.replace(/\/api\/v1\/?$/, '');
 
 export default function UserLandingPage() {
   const { user, setUser } = useOutletContext() || {};
@@ -19,8 +20,10 @@ export default function UserLandingPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [companyLogoUrl, setCompanyLogoUrl] = useState(null);
 
   const [companyForm, setCompanyForm] = useState({ name: '', email: '', logo: '' });
+  const [logoImage, setLogoImage] = useState();
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
 
@@ -48,9 +51,28 @@ export default function UserLandingPage() {
     }
   }, [hasCompany]);
 
+  const fetchCompanyLogo = useCallback(async () => {
+    if (!hasCompany) {
+      setCompanyLogoUrl(null);
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/company`, { credentials: 'include' });
+      const data = await res.json();
+      if (res.ok && data.success && data.data?.logo) {
+        setCompanyLogoUrl(`${API_ORIGIN}/logos/${data.data.logo}`);
+      } else {
+        setCompanyLogoUrl(null);
+      }
+    } catch {
+      setCompanyLogoUrl(null);
+    }
+  }, [hasCompany]);
+
   useEffect(() => {
     fetchStats();
-  }, [fetchStats]);
+    fetchCompanyLogo();
+  }, [fetchStats, fetchCompanyLogo]);
 
   const handleCompanyChange = (e) => {
     const { name, value } = e.target;
@@ -62,12 +84,16 @@ export default function UserLandingPage() {
     setCreateError('');
     setCreating(true);
 
+    const form = new FormData();
+    form.append("name", companyForm.name);
+    form.append("email", companyForm.email);
+    form.append("logo", logoImage);
+
     try {
       const res = await fetch(`${API_BASE}/company`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(companyForm),
+        body: form,
       });
       const data = await res.json();
 
@@ -76,6 +102,9 @@ export default function UserLandingPage() {
       }
 
       setUser?.(data.data.user);
+      if (data.data.company?.logo) {
+        setCompanyLogoUrl(`${API_ORIGIN}/logos/${data.data.company.logo}`);
+      }
       setCompanyForm({ name: '', email: '', logo: '' });
     } catch (err) {
       setCreateError(err.message || 'Failed to create company');
@@ -94,7 +123,8 @@ export default function UserLandingPage() {
               Create Your Company
             </h1>
             <p className="text-xs text-slate-400 mt-1">
-              You need a company before using the POS. You will become the Master Admin.
+              You need a company before using the POS. You will become the
+              Master Admin.
             </p>
           </div>
 
@@ -104,11 +134,18 @@ export default function UserLandingPage() {
             </div>
           )}
 
-          <form onSubmit={handleCreateCompany} className="space-y-4">
+          <form
+            onSubmit={handleCreateCompany}
+            className="space-y-4"
+            encType="multipart/form-data"
+          >
+            {" "}
             <div>
+              {" "}
               <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
-                Company Name
-              </label>
+                {" "}
+                Company Name{" "}
+              </label>{" "}
               <input
                 name="name"
                 value={companyForm.name}
@@ -116,12 +153,14 @@ export default function UserLandingPage() {
                 required
                 className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
                 placeholder="My Company"
-              />
-            </div>
+              />{" "}
+            </div>{" "}
             <div>
+              {" "}
               <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
-                Company Email
-              </label>
+                {" "}
+                Company Email{" "}
+              </label>{" "}
               <input
                 type="email"
                 name="email"
@@ -130,28 +169,34 @@ export default function UserLandingPage() {
                 required
                 className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
                 placeholder="shop@example.com"
-              />
-            </div>
+              />{" "}
+            </div>{" "}
             <div>
+              {" "}
               <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
-                Logo URL
-              </label>
+                {" "}
+                Company Logo{" "}
+              </label>{" "}
               <input
+                type="file"
                 name="logo"
-                value={companyForm.logo}
-                onChange={handleCompanyChange}
+                accept="image/*"
+                onChange={e => {
+                  handleCompanyChange(e);
+                  setLogoImage(e.target.files[0])
+                }}
                 required
-                className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
-                placeholder="https://..."
-              />
-            </div>
+                className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-600 file:text-white file:text-xs file:font-semibold"
+              />{" "}
+            </div>{" "}
             <button
               type="submit"
               disabled={creating}
               className="w-full py-2.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-semibold hover:opacity-95 disabled:opacity-50"
             >
-              {creating ? 'Creating...' : 'Create Company'}
-            </button>
+              {" "}
+              {creating ? "Creating..." : "Create Company"}{" "}
+            </button>{" "}
           </form>
         </div>
       </div>
@@ -164,36 +209,50 @@ export default function UserLandingPage() {
       <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 via-[#131a30] to-slate-900 border border-slate-800/80 p-8 md:p-10 shadow-2xl">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_120%,rgba(99,102,241,0.15),transparent_50%)] pointer-events-none" />
         
-        <div className="relative z-10 max-w-2xl">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 mb-4 animate-bounce">
-            <Flame className="w-3.5 h-3.5" />
-            POS Terminal Active
-          </span>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight mb-4">
-            Welcome, {user?.name} <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-pink-300 bg-clip-text text-transparent">
-              POS Management Hub
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <div className="max-w-2xl">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 mb-4 animate-bounce">
+              <Flame className="w-3.5 h-3.5" />
+              POS Terminal Active
             </span>
-          </h1>
-          <p className="text-slate-400 text-base md:text-lg mb-6 leading-relaxed">
-            Here is a live summary of today&apos;s sales activity and quick access to all modules.
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Link 
-              to="/dashboard" 
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:from-indigo-500 hover:to-violet-500 transition-all duration-200 shadow-lg shadow-indigo-600/20 flex items-center gap-2 hover:translate-x-1"
-            >
-              Open Full Dashboard
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <button 
-              onClick={() => fetchStats()} 
-              className="px-4 py-3 rounded-xl bg-slate-850 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white font-medium text-sm transition-colors duration-200 flex items-center gap-2"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              Refresh Analytics
-            </button>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight mb-4">
+              Welcome, {user?.name} <br />
+              <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-pink-300 bg-clip-text text-transparent">
+                POS Management Hub
+              </span>
+            </h1>
+            <p className="text-slate-400 text-base md:text-lg mb-6 leading-relaxed">
+              Here is a live summary of today&apos;s sales activity and quick access to all modules.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Link 
+                to="/dashboard" 
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:from-indigo-500 hover:to-violet-500 transition-all duration-200 shadow-lg shadow-indigo-600/20 flex items-center gap-2 hover:translate-x-1"
+              >
+                Open Full Dashboard
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <button 
+                onClick={() => fetchStats()} 
+                className="px-4 py-3 rounded-xl bg-slate-850 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white font-medium text-sm transition-colors duration-200 flex items-center gap-2"
+              >
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                Refresh Analytics
+              </button>
+            </div>
           </div>
+
+          {companyLogoUrl && (
+            <div className="shrink-0 self-center md:self-auto">
+              <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl bg-slate-900/70 border border-slate-700/70 p-3 flex items-center justify-center shadow-lg shadow-black/20">
+                <img
+                  src={companyLogoUrl}
+                  alt="Company logo"
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

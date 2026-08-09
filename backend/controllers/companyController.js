@@ -1,12 +1,40 @@
 import pool from "../database.js";
+import path from "path";
+import multer from "multer";
+import { fileURLToPath } from "url";
 import { AppError } from "../utils/error.js";
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(path.dirname(fileURLToPath(import.meta.url)), "../logos"));
+    },
+    filename: (req, file, cb) => {
+        cb(null, req.user.email + '-logo.jpeg');
+    }
+});
+
+export const upload = multer({
+    storage,
+
+    fileFilter: (req, file, cb) => {
+        if(file.mimetype.startsWith("image/"))
+            cb(null, true);
+        else 
+            cb(new AppError("Only image files are allowed.", 400));
+    },
+
+    limits: {
+        fileSize: 1024 * 1024
+    }
+});
+
 // Create a company — creator becomes MASTER_ADMIN
-export const createCompany = async (req, res) => {
-    const { name, email, logo } = req.body;
+export const createCompany = async (req, res, next) => {
+    const { name, email } = req.body;
+    const { filename } = req.file;
     const user = req.user;
 
-    if (!name || !email || !logo) {
+    if (!name || !email || !filename) {
         throw new AppError("Please provide company name, email, and logo.", 400);
     }
 
@@ -23,7 +51,7 @@ export const createCompany = async (req, res) => {
             `INSERT INTO company (name, logo, email, master_admin)
              VALUES ($1, $2, $3, $4)
              RETURNING id, name, logo, email, master_admin;`,
-            [name, logo, email, user.id]
+            [name, filename, email, user.id]
         );
 
         const company = companyResult.rows[0];
@@ -47,16 +75,41 @@ export const createCompany = async (req, res) => {
             },
         });
     } catch (err) {
-        await client.query("ROLLBACK");
-        if (err instanceof AppError) throw err;
-        throw new AppError("Something went wrong while creating the company.", 500);
+        next(err);
     } finally {
         client.release();
     }
 };
 
+// GET current user's company (includes logo filename)
+export const getMyCompany = async (req, res, next) => {
+    try {
+        if (!req.user.company_id) {
+            throw new AppError("You do not belong to a company yet.", 404);
+        }
+
+        const result = await pool.query(
+            `SELECT id, name, logo, email, master_admin
+             FROM company
+             WHERE id = $1`,
+            [req.user.company_id]
+        );
+
+        if (result.rowCount === 0) {
+            throw new AppError("Company not found.", 404);
+        }
+
+        res.status(200).json({
+            success: true,
+            data: result.rows[0],
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 // Add an existing user to the company as OWNER or CASHIER
-export const addMember = async (req, res) => {
+export const addMember = async (req, res, next) => {
     const { email, role } = req.body;
     const admin = req.user;
 
@@ -102,7 +155,6 @@ export const addMember = async (req, res) => {
             data: updated.rows[0],
         });
     } catch (err) {
-        if (err instanceof AppError) throw err;
-        throw new AppError("Something went wrong while adding the member.", 500);
+        next(err);
     }
 };

@@ -23,7 +23,7 @@ const COOKIE_OPTIONS = {
 };
 
 // signup
-export const signup = async (req , res) => {
+export const signup = async (req , res, next) => {
     const {name, email, password, confirm_password} = req.body; 
 
     if (!name || !email || !password || !confirm_password)
@@ -55,14 +55,14 @@ export const signup = async (req , res) => {
     } 
 
     catch(err) {
-        throw new AppError("Error while creating an account. Please try again later.", 500);
+        next(err);
     }
 
 };
 
 
 // Login
-export const login = async(req, res) => {
+export const login = async(req, res, next) => {
     const {email, password} = req.body;
 
     if (!email || !password)
@@ -93,9 +93,7 @@ export const login = async(req, res) => {
             }
         });
     } catch(err) {
-        if (err instanceof AppError) throw err;
-        console.error("login error:", err);
-        throw new AppError("Something went wrong while logging in.", 500);
+        next(err);
     }
 };
 
@@ -112,7 +110,7 @@ export const getMe = (req, res) => {
 };
 
 // Forgot Password
-export const forgotPassword = async (req, res) => {
+export const forgotPassword = async (req, res, next) => {
     const { email } = req.body;
 
     if (!email) {
@@ -150,14 +148,12 @@ export const forgotPassword = async (req, res) => {
 
     
     }  catch(err) {
-        if (err instanceof AppError) throw err;
-        console.error("forgotPassword error:", err);
-        throw new AppError("Something went wrong. Please try again.", 500);
+        next(err);
     }
 };
 
 // REset Password
-export const resetPassword = async(req, res) => {
+export const resetPassword = async(req, res, next) => {
     const {token, password} = req.body;
 
     if (!token || !password) {
@@ -187,9 +183,7 @@ export const resetPassword = async(req, res) => {
             message: "Password reset successfully! You can now log in."
         });
     } catch (err) {
-        if (err instanceof AppError) throw err;
-        console.error("resetPassword error:", err);
-        throw new AppError("Something went wrong. Please try again.", 500);
+        next(err);
     }
 };
 
@@ -211,8 +205,7 @@ export const protect = async (req, res, next) => {
         req.user = user;
         next();
     } catch (err) {
-        if (err instanceof AppError) return next(err);
-        return next(new AppError("Your session is invalid or has expired. Please log in again.", 401));
+        next(err);
     }
 };
 
