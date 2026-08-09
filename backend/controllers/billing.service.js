@@ -1,5 +1,5 @@
 //run SQL and return rows.
-import pool from "../../database.js";
+import pool from "../database.js";
 //import the shared postgresql connection pool from database.js
 // pool is the name that we will refre to pool in this project
 /*GOAL: 

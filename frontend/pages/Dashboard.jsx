@@ -22,7 +22,9 @@ export default function Dashboard() {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`${API_BASE}/dashboard/stats`);
+      const response = await fetch(`${API_BASE}/dashboard/stats`, {
+        credentials: 'include',
+      });
       const resData = await response.json();
       if (resData.success) {
         setStats(resData.data);

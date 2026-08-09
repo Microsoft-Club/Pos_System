@@ -6,7 +6,7 @@ import UserLandingPage from '../pages/UserLandingPage.jsx';
 import Dashboard from '../pages/Dashboard.jsx';
 import Product from '../pages/Product.jsx';
 import ReceiptPrinting from '../pages/ReceiptPrinting.jsx';
-import { BillingScreen } from '../pages/Placeholders.jsx';
+import BillingPage from '../pages/BillingPage.jsx';
 import Login from '../pages/Login.jsx';
 import Signup from '../pages/Signup.jsx';
 import AddMember from '../pages/AddMember.jsx';
@@ -24,7 +24,7 @@ const router = createBrowserRouter(
           <Route path="/user" element={<UserLandingPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/products" element={<Product />} />
-          <Route path="/billing" element={<BillingScreen />} />
+          <Route path="/billing" element={<BillingPage />} />
           <Route path="/receipts" element={<ReceiptPrinting />} />
           <Route path="/add-member" element={<AddMember />} />
         </Route>

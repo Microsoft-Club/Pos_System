@@ -36,6 +36,7 @@
     box-shadow: none !important;
     border: none !important;
   }
+}
 /* Register JetBrains Mono as the default Tailwind font-sans */
 @theme {
   --font-sans: "JetBrains Mono", ui-monospace, monospace;

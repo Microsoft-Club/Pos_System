@@ -26,8 +26,8 @@ export default function CartPanel() {
 
       {/* Bottom checkout section */}
       <div className="bg-blue-500 text-white p-4 space-y-3">
-        <div className="grid grid-cols-3 gap-2">
-          {['Cash', 'Card', 'Discount'].map((method, index) => (
+        <div className="grid grid-cols-2 gap-2">
+          {['Cash', 'Discount'].map((method, index) => (
             <button
               key={method}
               className={

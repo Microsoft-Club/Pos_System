@@ -21,6 +21,7 @@ export async function markOrderPrinted(orderId, paymentMethod = "CASH") {
     const response = await fetch(`${API_BASE}/receipts/${orderId}/print`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ payment_method: paymentMethod }),
     });
     return await response.json();

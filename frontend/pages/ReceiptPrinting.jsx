@@ -34,7 +34,9 @@ export default function ReceiptPrinting() {
     setLoading(true);
     setStatusMsg("");
     try {
-      const response = await fetch(`${API_BASE}/receipts`);
+      const response = await fetch(`${API_BASE}/receipts`, {
+        credentials: 'include',
+      });
       const resData = await response.json();
       if (!resData.success) throw new Error(resData.message || "Failed to load receipts");
       applyReceiptPayload(resData);

@@ -7,6 +7,7 @@ import itemRouter from "./routes/items.js";
 import receiptRouter from "./routes/receipts.js";
 import authRouter from "./routes/auth.js";
 import companyRouter from "./routes/company.js";
+import billingRoutes from "./routes/billing.routes.js";
 import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
@@ -45,6 +46,7 @@ app.use("/api/v1/items", itemRouter);
 app.use("/api/v1/receipts", receiptRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/company", companyRouter);
+app.use("/api/v1/billing", billingRoutes);
 
 app.use(globalErrorMiddleware);
 

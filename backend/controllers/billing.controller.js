@@ -5,6 +5,7 @@
 >>>SEND JSON OR THE ERRPOS ENCOUNTERRED
 */
 import { GetItemByCompanyId,CreateOrderForCompany} from "./billing.service.js";
+import { AppError } from "../utils/error.js";
 // we are just importing the functio that is talking to the database 
 /*
 * As We might be GET-ting the response i.e /api/v1/building/items
@@ -15,12 +16,14 @@ import { GetItemByCompanyId,CreateOrderForCompany} from "./billing.service.js";
 *next-> pass errors
 */
 //  list items is going to lists the items after retriving tem from postgresql
-export async function listItems(req,res) {
+export async function listItems(req,res,next) {
     // now we may call the getitemfunction but we have to validate the data retreived
     //so we are going to validate using try catch 
     try{
+    const {companyId} = req.params;
+    if(!companyId)
+        throw new AppError("Please provide company id.", 400);
     // so the server/user wants to have access to the company id for that we will just declare a company id variable to store the requested id
-    const companyId=1; // hardcoded value else 
     // const companyId=req.user.company_id
     
     // Call the service ad wait for the array of items
@@ -33,20 +36,13 @@ export async function listItems(req,res) {
     );
     }
     catch(error){
-        // we will log error as well 
-        console.error("list Item error:",error);
-        // 500 -> server error 
-        return res.status(500).json(
-            {
-                message:"Failed to fetch the menu items",
-            }
-        );
+        next(new AppError("Failed to fetch the menu items", 500));
     }
 }
 
 
 
-export async function createOrder(req,res){
+export async function createOrder(req,res,next){
 
 
     try{
@@ -57,7 +53,7 @@ export async function createOrder(req,res){
         const {items,payment_method}=req.body;
         //Validate the cart and payment method
         if(!items || !Array.isArray(items) || items.length===0){
-            return res.status(400).json({message:"Cart is empty or invalid"});
+            throw new AppError("Cart is empty or invalid", 400);
         }
 
 
@@ -75,15 +71,17 @@ export async function createOrder(req,res){
         //201-> created successfully
     }
     catch(error){
-        console.error("create order error:",error);
+        if (error instanceof AppError) {
+            return next(error);
+        }
         // Match the exact messages thrown by the service
         if (
             error.message === "Cart is Empty!" ||
             error.message === "Invalid Cart Item!" ||
             error.message === "Items not found or do not belong to the company!"
         ) {
-            return res.status(400).json({ message: error.message }); // 400 = bad request
+            return next(new AppError(error.message, 400));
         }
-        return res.status(500).json({ message: "Failed to create order" }); // 500 = server error
+        next(new AppError("Failed to create order", 500));
     }
 }

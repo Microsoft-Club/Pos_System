@@ -19,7 +19,9 @@ export default function Product() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`${API_BASE}/items`);
+      const res = await fetch(`${API_BASE}/items`, {
+        credentials: 'include',
+      });
       const data = await res.json();
       if (!data.success) throw new Error(data.message || 'Failed to load items');
       setItems(data.data || []);
@@ -36,7 +38,9 @@ export default function Product() {
 
     async function loadItems() {
       try {
-        const res = await fetch(`${API_BASE}/items`);
+        const res = await fetch(`${API_BASE}/items`, {
+          credentials: 'include',
+        });
         const data = await res.json();
         if (cancelled) return;
         if (!data.success) throw new Error(data.message || 'Failed to load items');
@@ -81,6 +85,7 @@ export default function Product() {
       const res = await fetch(`${API_BASE}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           name: form.name.trim(),
           price: parseFloat(form.price),
@@ -111,6 +116,7 @@ export default function Product() {
       const res = await fetch(`${API_BASE}/items/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(updates),
       });
 
@@ -129,7 +135,10 @@ export default function Product() {
   const handleDelete = async (id) => {
     setError('');
     try {
-      const res = await fetch(`${API_BASE}/items/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE}/items/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
 
       const data = await res.json();
 
