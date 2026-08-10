@@ -85,25 +85,25 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       {/* Dashboard Top bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/40 p-5 rounded-2xl border border-slate-800/80">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-muted/40 p-5 rounded-2xl border border-edge/80">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            <Layers className="w-6 h-6 text-indigo-400" />
+          <h1 className="text-2xl font-bold tracking-tight text-fg flex items-center gap-2">
+            <Layers className="w-6 h-6 text-accent" />
             Dashboard
           </h1>
-          <p className="text-xs text-slate-400">Review business metrics, daily sales graphs, and recent orders.</p>
+          <p className="text-xs text-fg-muted">Review business metrics, daily sales graphs, and recent orders.</p>
         </div>
 
         <button 
           onClick={fetchStats}
-          className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition-colors"
+          className="p-2 rounded-lg bg-chip hover:bg-edge-strong text-fg-muted hover:text-fg border border-edge-strong/60 transition-colors"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
       {error && (
-        <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+        <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-danger-fg text-sm">
           {error}
         </div>
       )}
@@ -112,89 +112,89 @@ export default function Dashboard() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-28 bg-[#0f1626] border border-slate-800 rounded-2xl animate-pulse" />
+              <div key={i} className="h-28 bg-surface border border-edge rounded-2xl animate-pulse" />
             ))}
           </div>
-          <div className="h-64 bg-[#0f1626] border border-slate-800 rounded-2xl animate-pulse" />
+          <div className="h-64 bg-surface border border-edge rounded-2xl animate-pulse" />
         </div>
       ) : (
         <>
           {/* Row 1: Metrics Playcards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Sales Card */}
-            <div className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-300">
+            <div className="bg-surface border border-edge rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-300">
               <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-500/5 rounded-full blur-lg pointer-events-none" />
               <div className="flex justify-between items-center mb-3">
-                <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Today's Sales</span>
-                <span className="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg">
+                <span className="text-xs font-semibold uppercase text-fg-muted tracking-wider">Today's Sales</span>
+                <span className="p-2 bg-indigo-500/10 text-accent rounded-lg">
                   <DollarSign className="w-4 h-4" />
                 </span>
               </div>
-              <div className="text-2xl font-extrabold text-white">Rs. {(stats?.todaySales ?? 0).toLocaleString()}</div>
+              <div className="text-2xl font-extrabold text-fg">Rs. {(stats?.todaySales ?? 0).toLocaleString()}</div>
             </div>
 
             {/* Orders Card */}
-            <div className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-violet-500/30 transition-all duration-300">
+            <div className="bg-surface border border-edge rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-violet-500/30 transition-all duration-300">
               <div className="absolute top-0 right-0 w-20 h-20 bg-violet-500/5 rounded-full blur-lg pointer-events-none" />
               <div className="flex justify-between items-center mb-3">
-                <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Total Orders</span>
-                <span className="p-2 bg-violet-500/10 text-violet-400 rounded-lg">
+                <span className="text-xs font-semibold uppercase text-fg-muted tracking-wider">Total Orders</span>
+                <span className="p-2 bg-violet-500/10 text-accent rounded-lg">
                   <ShoppingBag className="w-4 h-4" />
                 </span>
               </div>
-              <div className="text-2xl font-extrabold text-white">{stats?.todayOrders ?? 0} Orders</div>
+              <div className="text-2xl font-extrabold text-fg">{stats?.todayOrders ?? 0} Orders</div>
             </div>
 
             {/* Cash Collected Card */}
-            <div className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-emerald-500/30 transition-all duration-300">
+            <div className="bg-surface border border-edge rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-emerald-500/30 transition-all duration-300">
               <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/5 rounded-full blur-lg pointer-events-none" />
               <div className="flex justify-between items-center mb-3">
-                <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Cash Collected</span>
-                <span className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
+                <span className="text-xs font-semibold uppercase text-fg-muted tracking-wider">Cash Collected</span>
+                <span className="p-2 bg-emerald-500/10 text-success-fg rounded-lg">
                   <DollarSign className="w-4 h-4" />
                 </span>
               </div>
-              <div className="text-2xl font-extrabold text-white">Rs. {(stats?.totalCashCollected ?? 0).toLocaleString()}</div>
-              <p className="text-[10px] text-slate-400 mt-2">
+              <div className="text-2xl font-extrabold text-fg">Rs. {(stats?.totalCashCollected ?? 0).toLocaleString()}</div>
+              <p className="text-[10px] text-fg-muted mt-2">
                 100% payments cleared in cash
               </p>
             </div>
 
             {/* Total Units Card */}
-            <div className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-orange-500/30 transition-all duration-300">
+            <div className="bg-surface border border-edge rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-orange-500/30 transition-all duration-300">
               <div className="absolute top-0 right-0 w-20 h-20 bg-orange-500/5 rounded-full blur-lg pointer-events-none" />
               <div className="flex justify-between items-center mb-3">
-                <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Items Sold</span>
+                <span className="text-xs font-semibold uppercase text-fg-muted tracking-wider">Items Sold</span>
                 <span className="p-2 bg-orange-500/10 text-orange-400 rounded-lg">
                   <Flame className="w-4 h-4" />
                 </span>
               </div>
-              <div className="text-2xl font-extrabold text-white">
+              <div className="text-2xl font-extrabold text-fg">
                 {stats?.itemsSold ?? 0} Units
               </div>
-              <p className="text-[10px] text-slate-400 mt-2">
+              <p className="text-[10px] text-fg-muted mt-2">
                 Total quantity sold today
               </p>
             </div>
           </div>
 
           {/* Row 2: Weekly Sales Chart */}
-          <div className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+          <div className="bg-surface border border-edge rounded-2xl p-6 shadow-xl space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
-                    <Calendar className="w-4.5 h-4.5 text-indigo-400" />
+                  <h3 className="text-base font-bold text-fg tracking-tight flex items-center gap-2">
+                    <Calendar className="w-4.5 h-4.5 text-accent" />
                     Weekly Sales Analytics
                   </h3>
-                  <p className="text-[10px] text-slate-400">Total transaction values over the past 7 days</p>
+                  <p className="text-[10px] text-fg-muted">Total transaction values over the past 7 days</p>
                 </div>
-                <span className="text-xs font-semibold text-indigo-300 bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/15">
+                <span className="text-xs font-semibold text-accent-soft bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/15">
                   Last 7 Days
                 </span>
               </div>
 
               {/* Chart container */}
-              <div className="relative w-full h-[180px] bg-slate-900/30 rounded-xl border border-slate-850 p-2 overflow-visible">
+              <div className="relative w-full h-[180px] bg-muted/30 rounded-xl border border-slate-850 p-2 overflow-visible">
                 <svg viewBox="0 0 500 150" className="w-full h-full overflow-visible" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
@@ -229,12 +229,12 @@ export default function Dashboard() {
                         const y = 150 - (d.sales / maxSales) * 120 - 15;
                         return (
                           <g key={index} className="group/dot cursor-pointer">
-                            <circle cx={x} cy={y} r="4.5" fill="#0f1626" stroke="#6366f1" strokeWidth="2" />
+                            <circle cx={x} cy={y} r="4.5" fill="var(--surface)" stroke="#6366f1" strokeWidth="2" />
                             <circle cx={x} cy={y} r="8" fill="#6366f1" opacity="0" className="hover:opacity-20 transition-opacity" />
                             
                             {/* Hover tooltip for individual point */}
                             <foreignObject x={x - 45} y={y - 35} width="90" height="28" className="opacity-0 group-hover/dot:opacity-100 transition-opacity pointer-events-none">
-                              <div className="bg-slate-950/95 border border-slate-700/80 rounded-md text-[9px] font-bold text-center text-white py-1 shadow-lg backdrop-blur-sm">
+                              <div className="bg-page/95 border border-edge-strong/80 rounded-md text-[9px] font-bold text-center text-fg py-1 shadow-lg backdrop-blur-sm">
                                 Rs. {d.sales.toFixed(0)}
                               </div>
                             </foreignObject>
@@ -247,7 +247,7 @@ export default function Dashboard() {
               </div>
 
               {/* X axis labels */}
-              <div className="flex justify-between px-2 text-[9px] text-slate-500 font-bold tracking-wide uppercase">
+              <div className="flex justify-between px-2 text-[9px] text-fg-subtle font-bold tracking-wide uppercase">
                 {stats?.weeklySales?.map((d, idx) => (
                   <span key={idx}>{d.date}</span>
                 ))}
@@ -255,21 +255,21 @@ export default function Dashboard() {
           </div>
 
           {/* Row 3: Recent Orders Table */}
-          <div className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 shadow-xl">
+          <div className="bg-surface border border-edge rounded-2xl p-6 shadow-xl">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
-                  <Clock className="w-4.5 h-4.5 text-indigo-400" />
+                <h3 className="text-base font-bold text-fg tracking-tight flex items-center gap-2">
+                  <Clock className="w-4.5 h-4.5 text-accent" />
                   Today's Recent Orders
                 </h3>
-                <p className="text-[10px] text-slate-400">List of last 5 checked-out transactions</p>
+                <p className="text-[10px] text-fg-muted">List of last 5 checked-out transactions</p>
               </div>
-              <span className="text-xs text-slate-400">Terminal 1</span>
+              <span className="text-xs text-fg-muted">Terminal 1</span>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-slate-300">
-                <thead className="text-xs uppercase bg-slate-900/60 text-slate-400 border-b border-slate-850">
+              <table className="w-full text-left text-sm text-fg-muted">
+                <thead className="text-xs uppercase bg-muted/60 text-fg-muted border-b border-slate-850">
                   <tr>
                     <th className="py-3 px-4 font-bold">Order ID</th>
                     <th className="py-3 px-4 font-bold">Timestamp</th>
@@ -281,16 +281,16 @@ export default function Dashboard() {
                 <tbody className="divide-y divide-slate-850">
                   {stats?.recentOrders?.length > 0 ? (
                     stats.recentOrders.map((order) => (
-                      <tr key={order.id} className="hover:bg-slate-900/20 transition-colors">
-                        <td className="py-3.5 px-4 font-semibold text-white">#{order.id}</td>
-                        <td className="py-3.5 px-4 text-xs text-slate-400 flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-indigo-400/80" />
+                      <tr key={order.id} className="hover:bg-muted/20 transition-colors">
+                        <td className="py-3.5 px-4 font-semibold text-fg">#{order.id}</td>
+                        <td className="py-3.5 px-4 text-xs text-fg-muted flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-accent/80" />
                           {order.time}
                         </td>
-                        <td className="py-3.5 px-4 text-xs text-slate-300 max-w-xs truncate">{order.items}</td>
-                        <td className="py-3.5 px-4 font-bold text-white text-right">Rs. {order.total.toLocaleString()}</td>
+                        <td className="py-3.5 px-4 text-xs text-fg-muted max-w-xs truncate">{order.items}</td>
+                        <td className="py-3.5 px-4 font-bold text-fg text-right">Rs. {order.total.toLocaleString()}</td>
                         <td className="py-3.5 px-4 text-center">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold text-success-fg bg-emerald-500/10 border border-emerald-500/20">
                             <CheckCircle className="w-3 h-3" />
                             {order.status}
                           </span>
@@ -299,7 +299,7 @@ export default function Dashboard() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" className="py-6 text-center text-slate-500">
+                      <td colSpan="5" className="py-6 text-center text-fg-subtle">
                         No orders recorded today. Go to the Billing Screen to create some sales!
                       </td>
                     </tr>

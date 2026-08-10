@@ -20,9 +20,7 @@ export async function listItems(req,res,next) {
     // now we may call the getitemfunction but we have to validate the data retreived
     //so we are going to validate using try catch 
     try{
-    const {companyId} = req.params;
-    if(!companyId)
-        throw new AppError("Please provide company id.", 400);
+    const companyId = req.user.company_id;
     // so the server/user wants to have access to the company id for that we will just declare a company id variable to store the requested id
     // const companyId=req.user.company_id
     
@@ -46,8 +44,8 @@ export async function createOrder(req,res,next){
 
 
     try{
-        // const companyId=req.user.company_id;
-        const companyId=1; // cause we hardcoded the value of company id
+        const companyId=req.user.company_id;
+        // const companyId=1; // cause we hardcoded the value of company id
 
         // Read cart + user-decided values from the request body
         const {items,payment_method,tax_rate,discount_rate,extra_charge}=req.body;

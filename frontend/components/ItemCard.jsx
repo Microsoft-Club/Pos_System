@@ -41,22 +41,22 @@ export default function ItemCard({ item, onUpdate, onDelete }) {
   };
 
   return (
-    <div className="bg-[#0f1626] border border-slate-800 rounded-2xl p-5 shadow-xl hover:border-indigo-500/30 transition-all duration-300 flex flex-col gap-4">
+    <div className="bg-surface border border-edge rounded-2xl p-5 shadow-xl hover:border-indigo-500/30 transition-all duration-300 flex flex-col gap-4">
       {editing ? (
         <div className="space-y-3">
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+            <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
               Name
             </label>
             <input
               name="name"
               value={form.name}
               onChange={handleChange}
-              className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2 text-sm text-fg focus:outline-none focus:border-indigo-500"
             />
           </div>
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+            <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
               Price
             </label>
             <input
@@ -66,11 +66,11 @@ export default function ItemCard({ item, onUpdate, onDelete }) {
               step="0.01"
               value={form.price}
               onChange={handleChange}
-              className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2 text-sm text-fg focus:outline-none focus:border-indigo-500"
             />
           </div>
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+            <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
               Type
             </label>
             <input
@@ -78,14 +78,14 @@ export default function ItemCard({ item, onUpdate, onDelete }) {
               value={form.type}
               onChange={handleChange}
               placeholder="e.g. Food, Drink"
-              className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2 text-sm text-fg focus:outline-none focus:border-indigo-500"
             />
           </div>
           <div className="flex gap-2 pt-1">
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-semibold hover:bg-emerald-500/25 disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-success-fg text-xs font-semibold hover:bg-emerald-500/25 disabled:opacity-50"
             >
               <Check className="w-3.5 h-3.5" />
               {saving ? 'Saving...' : 'Save'}
@@ -93,7 +93,7 @@ export default function ItemCard({ item, onUpdate, onDelete }) {
             <button
               onClick={handleCancel}
               disabled={saving}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold hover:bg-slate-700"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-chip border border-edge-strong text-fg-muted text-xs font-semibold hover:bg-edge-strong"
             >
               <X className="w-3.5 h-3.5" />
               Cancel
@@ -104,27 +104,27 @@ export default function ItemCard({ item, onUpdate, onDelete }) {
         <>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-white truncate">{item.name}</h3>
-              <p className="text-lg font-extrabold text-indigo-300 mt-1">
+              <h3 className="text-base font-bold text-fg truncate">{item.name}</h3>
+              <p className="text-lg font-extrabold text-accent-soft mt-1">
                 Rs. {Number(item.price).toLocaleString()}
               </p>
             </div>
-            <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-violet-300 bg-violet-500/10 border border-violet-500/20 px-2.5 py-1 rounded-lg">
+            <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-accent-soft bg-violet-500/10 border border-violet-500/20 px-2.5 py-1 rounded-lg">
               {item.type}
             </span>
           </div>
 
-          <div className="flex gap-2 mt-auto pt-2 border-t border-slate-800/80">
+          <div className="flex gap-2 mt-auto pt-2 border-t border-edge/80">
             <button
               onClick={() => setEditing(true)}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 text-xs font-semibold hover:bg-indigo-500/20"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-500/10 border border-indigo-500/25 text-accent-soft text-xs font-semibold hover:bg-indigo-500/20"
             >
               <Pencil className="w-3.5 h-3.5" />
               Edit
             </button>
             <button
               onClick={handleDelete}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/25 text-red-400 text-xs font-semibold hover:bg-red-500/20"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/25 text-danger-fg text-xs font-semibold hover:bg-red-500/20"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Delete

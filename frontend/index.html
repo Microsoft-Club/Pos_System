@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="./src/assets/pos-logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Load JetBrains Mono from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -14,6 +14,16 @@
     <title>Pak POS</title>
   </head>
   <body>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('pos-theme');
+          document.documentElement.classList.add(t === 'light' ? 'light' : 'dark');
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL
  */
 export async function apiGet(path) {
   // fetch() returns a Response object (not the data itself)
-  const response = await fetch(`${API_URL}${path}`)
+  const response = await fetch(`${API_URL}${path}`, {credentials: 'include'})
 
   // response.ok is false for 4xx / 5xx status codes
   if (!response.ok) {
@@ -28,6 +28,7 @@ export async function apiPost(path, body) {
   const response = await fetch(`${API_URL}${path}`, {
     method: 'POST', // HTTP verb for creating data
     headers: { 'Content-Type': 'application/json' }, // tell server we send JSON
+    credentials: 'include',
     body: JSON.stringify(body), // convert JS object -> JSON text
   })
 

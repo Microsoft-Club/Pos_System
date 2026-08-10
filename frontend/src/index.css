@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Class-based dark mode (html.dark / html.light) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Receipt print container: hidden on screen, shown only when printing. */
 #receipt-print-mount {
   display: none;
@@ -37,12 +40,96 @@
     border: none !important;
   }
 }
-/* Register JetBrains Mono as the default Tailwind font-sans */
+
+/* Semantic theme colors — values come from :root / html.light below */
 @theme {
   --font-sans: "JetBrains Mono", ui-monospace, monospace;
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-edge: var(--edge);
+  --color-edge-strong: var(--edge-strong);
+  --color-muted: var(--muted);
+  --color-hover: var(--hover);
+  --color-chip: var(--chip);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger-fg: var(--danger-fg);
+  --color-success-fg: var(--success-fg);
+  --color-warning-fg: var(--warning-fg);
+  --color-brand-from: var(--brand-from);
+  --color-brand-to: var(--brand-to);
 }
 
-/* Apply it to the whole app */
+/* Default: dark (matches existing UI) */
+:root,
+html.dark {
+  color-scheme: dark;
+  --page: #0b0f19;
+  --surface: #0f1626;
+  --elevated: #131b2e;
+  --fg: #f1f5f9;
+  --fg-muted: #94a3b8;
+  --fg-subtle: #64748b;
+  --edge: #1e293b;
+  --edge-strong: #334155;
+  --muted: #0f172a;
+  --hover: #1e293b;
+  --chip: #1e293b;
+  --accent: #818cf8;
+  --accent-soft: #a5b4fc;
+  --danger-fg: #fca5a5;
+  --success-fg: #34d399;
+  --warning-fg: #fbbf24;
+  --brand-from: #a78bfa;
+  --brand-to: #a5b4fc;
+}
+
+html.light {
+  color-scheme: light;
+  --page: #f1f5f9;
+  --surface: #ffffff;
+  --elevated: #ffffff;
+  --fg: #0f172a;
+  --fg-muted: #475569;
+  --fg-subtle: #64748b;
+  --edge: #e2e8f0;
+  --edge-strong: #cbd5e1;
+  --muted: #f1f5f9;
+  --hover: #e2e8f0;
+  --chip: #e2e8f0;
+  --accent: #4f46e5;
+  --accent-soft: #4338ca;
+  --danger-fg: #dc2626;
+  --success-fg: #059669;
+  --warning-fg: #d97706;
+  --brand-from: #7c3aed;
+  --brand-to: #4f46e5;
+}
+
 body {
   font-family: var(--font-sans);
+  background-color: var(--page);
+  color: var(--fg);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* All interactive buttons use pointer (disabled stay not-allowed) */
+button,
+[type="button"],
+[type="submit"],
+[type="reset"],
+[role="button"] {
+  cursor: pointer;
+}
+
+button:disabled,
+[type="button"]:disabled,
+[type="submit"]:disabled,
+[type="reset"]:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
 }

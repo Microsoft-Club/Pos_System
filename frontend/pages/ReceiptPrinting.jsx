@@ -104,14 +104,14 @@ export default function ReceiptPrinting() {
       {/* Page header */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full mb-3">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold text-warning-fg bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full mb-3">
             <Printer className="w-3.5 h-3.5" />
             Receipt Printing
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-white">
+          <h1 className="text-3xl font-black tracking-tight text-fg">
             Cash Payment & Receipt Preview
           </h1>
-          <p className="text-slate-400 text-sm mt-1 max-w-xl">
+          <p className="text-fg-muted text-sm mt-1 max-w-xl">
             Preview the thermal layout, then print the cash receipt.
           </p>
         </div>
@@ -119,7 +119,7 @@ export default function ReceiptPrinting() {
           <button
             type="button"
             onClick={fetchReceipts}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium bg-slate-800/80 border border-slate-700 text-slate-200 hover:bg-slate-800"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium bg-chip/80 border border-edge-strong text-fg hover:bg-chip"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -131,18 +131,18 @@ export default function ReceiptPrinting() {
         {/* Left: orders + payment */}
         <div className="xl:col-span-7 space-y-6">
           {/* Payment method — cash only */}
-          <section className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6">
-            <h2 className="text-sm font-bold text-white mb-1">Payment Method</h2>
-            <p className="text-xs text-slate-400 mb-4">
+          <section className="bg-surface border border-edge rounded-2xl p-6">
+            <h2 className="text-sm font-bold text-fg mb-1">Payment Method</h2>
+            <p className="text-xs text-fg-muted mb-4">
               This POS records cash payments only.
             </p>
             <div className="flex items-start gap-3 rounded-2xl border border-amber-400/60 bg-amber-500/10 p-5 shadow-lg shadow-amber-900/20">
-              <span className="p-3 rounded-xl bg-amber-500/20 text-amber-300">
+              <span className="p-3 rounded-xl bg-amber-500/20 text-warning-fg">
                 <Wallet className="w-6 h-6" />
               </span>
               <div>
-                <div className="font-bold text-white">Cash</div>
-                <div className="text-xs text-slate-400 mt-0.5">
+                <div className="font-bold text-fg">Cash</div>
+                <div className="text-xs text-fg-muted mt-0.5">
                   Collect cash · record sale · print receipt
                 </div>
               </div>
@@ -150,27 +150,27 @@ export default function ReceiptPrinting() {
           </section>
 
           {/* Recent orders */}
-          <section className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6">
+          <section className="bg-surface border border-edge rounded-2xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                  <ReceiptText className="w-4 h-4 text-amber-400" />
+                <h2 className="text-sm font-bold text-fg flex items-center gap-2">
+                  <ReceiptText className="w-4 h-4 text-warning-fg" />
                   Recent Orders
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-fg-muted mt-0.5">
                   Select a sale to reprint or test the thermal layout
                 </p>
               </div>
             </div>
 
             {loading ? (
-              <div className="py-12 text-center text-slate-400 text-sm">Loading orders…</div>
+              <div className="py-12 text-center text-fg-muted text-sm">Loading orders…</div>
             ) : orders.length === 0 ? (
-              <div className="py-12 text-center text-slate-400 text-sm">
+              <div className="py-12 text-center text-fg-muted text-sm">
                 No orders yet. Complete a sale on the Billing screen first.
               </div>
             ) : (
-              <ul className="divide-y divide-slate-800/80 max-h-[340px] overflow-y-auto pr-1">
+              <ul className="divide-y divide-edge/80 max-h-[340px] overflow-y-auto pr-1">
                 {orders.map((order) => {
                   const active = order.id === selectedId;
                   return (
@@ -181,27 +181,27 @@ export default function ReceiptPrinting() {
                         className={`w-full flex items-center justify-between gap-3 px-3 py-3 rounded-xl text-left transition-colors ${
                           active
                             ? "bg-amber-500/10 border border-amber-500/30"
-                            : "hover:bg-slate-900/60 border border-transparent"
+                            : "hover:bg-muted/60 border border-transparent"
                         }`}
                       >
                         <div className="min-w-0">
-                          <div className="text-sm font-semibold text-white">
+                          <div className="text-sm font-semibold text-fg">
                             Order #{order.id}
                           </div>
-                          <div className="text-[11px] text-slate-400 truncate mt-0.5">
+                          <div className="text-[11px] text-fg-muted truncate mt-0.5">
                             {(order.items || [])
                               .map((i) => `${i.quantity}x ${i.name}`)
                               .join(", ")}
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <div className="text-sm font-bold text-white tabular-nums">
+                          <div className="text-sm font-bold text-fg tabular-nums">
                             Rs. {Number(order.total || 0).toLocaleString()}
                           </div>
-                          <div className="text-[10px] text-slate-500 flex items-center justify-end gap-1 mt-0.5">
+                          <div className="text-[10px] text-fg-subtle flex items-center justify-end gap-1 mt-0.5">
                             {order.printed_at ? (
                               <>
-                                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                                <CheckCircle2 className="w-3 h-3 text-success-fg" />
                                 Printed
                               </>
                             ) : (
@@ -221,13 +221,13 @@ export default function ReceiptPrinting() {
           </section>
 
           {/* Hardware notes */}
-          <section className="bg-[#0f1626]/80 border border-slate-800 rounded-2xl p-5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+          <section className="bg-surface/80 border border-edge rounded-2xl p-5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-fg-muted mb-3 flex items-center gap-2">
               <Usb className="w-3.5 h-3.5" />
               Hardware connection
             </h3>
-            <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-3 text-xs text-slate-400 leading-relaxed">
-              <div className="font-semibold text-slate-200 mb-1">Thermal printer</div>
+            <div className="rounded-xl border border-edge bg-muted/40 p-3 text-xs text-fg-muted leading-relaxed">
+              <div className="font-semibold text-fg mb-1">Thermal printer</div>
               Plug in via USB or LAN, install ESC/POS drivers, then pick the printer in the
               browser print dialog (paper 58mm or 80mm, margins none).
             </div>
@@ -236,11 +236,11 @@ export default function ReceiptPrinting() {
 
         {/* Right: live receipt + print */}
         <div className="xl:col-span-5">
-          <div className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 sticky top-24">
+          <div className="bg-surface border border-edge rounded-2xl p-6 sticky top-24">
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h2 className="text-sm font-bold text-white">Receipt Preview</h2>
-                <p className="text-xs text-slate-400">80mm thermal layout</p>
+                <h2 className="text-sm font-bold text-fg">Receipt Preview</h2>
+                <p className="text-xs text-fg-muted">80mm thermal layout</p>
               </div>
               <button
                 type="button"
@@ -253,12 +253,12 @@ export default function ReceiptPrinting() {
               </button>
             </div>
 
-            <div className="rounded-xl bg-slate-950/50 border border-slate-800/80 p-4 flex justify-center">
+            <div className="rounded-xl bg-page/50 border border-edge/80 p-4 flex justify-center">
               <ReceiptPreview order={selectedOrder} paymentMethod={PAYMENT_METHOD} />
             </div>
 
             {statusMsg && (
-              <p className="mt-4 text-xs text-amber-300/90 bg-amber-500/10 border border-amber-500/20 rounded-xl px-3 py-2">
+              <p className="mt-4 text-xs text-warning-fg bg-amber-500/10 border border-amber-500/20 rounded-xl px-3 py-2">
                 {statusMsg}
               </p>
             )}

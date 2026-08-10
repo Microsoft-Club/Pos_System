@@ -3,7 +3,7 @@ import { AppError } from "../utils/error.js";
 
 const buildTotals = (items) => {
     const subtotal = items.reduce((sum, item) => sum + Number(item.line_total), 0);
-    const total = parseFloat((subtotal + tax).toFixed(2));
+    const total = parseFloat((subtotal).toFixed(2));
     return {
         subtotal: parseFloat(subtotal.toFixed(2)),
         total
@@ -45,7 +45,6 @@ export const getRecentReceipts = async (req, res, next) => {
                 o.id,
                 o.created_at,
                 o.company_id,
-                o.printed_at,
                 c.name AS company_name,
                 NULLIF(c.logo, '') AS company_logo,
                 COALESCE(SUM(oi.quantity * i.price), 0) AS order_total
@@ -53,7 +52,7 @@ export const getRecentReceipts = async (req, res, next) => {
             JOIN company c ON c.id = o.company_id
             JOIN order_items oi ON oi.order_id = o.id
             JOIN items i ON i.id = oi.item_id
-            GROUP BY o.id, o.created_at, o.company_id, o.printed_at, c.name, c.logo
+            GROUP BY o.id, o.created_at, o.company_id, c.name, c.logo
             ORDER BY o.id DESC
             LIMIT $1;
         `;
@@ -104,7 +103,6 @@ export const getReceiptById = async (req, res, next) => {
                 o.id,
                 o.created_at,
                 o.company_id,
-                o.printed_at,
                 c.name AS company_name,
                 NULLIF(c.logo, '') AS company_logo
             FROM orders o
@@ -143,12 +141,12 @@ export const markReceiptPrinted = async (req, res, next) => {
     try {
         const result = await pool.query(
             `
-            UPDATE orders
-            printed_at = NOW()
-            WHERE id = $2
-            RETURNING id, printed_at, created_at, company_id;
+            UPDATE orders SET
+            created_at = NOW()
+            WHERE id = $1 AND company_id = $2
+            RETURNING id, created_at, company_id;
             `,
-            [id]
+            [id, req.user.company_id]
         );
 
         return res.status(200).json({

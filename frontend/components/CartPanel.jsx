@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Calculator from './Calculator.jsx'
+import { formatRs } from '../utils/money.js'
 
 /**
  * CART AND BILLING SECTION (right-hand ticket column)
@@ -65,10 +66,10 @@ export default function CartPanel({
   }
 
   return (
-    <aside className="relative w-80 bg-white border-l border-slate-200 flex flex-col">
+    <aside className="relative w-80 bg-surface border-l border-edge flex flex-col shrink-0">
       {/* Calculator opens as a fixed popup to the left of this panel (stays on-screen) */}
       {activePanel === 'calc' && (
-        <div className="fixed bottom-4 right-[21rem] w-64 z-40 rounded-xl shadow-2xl bg-blue-600">
+        <div className="fixed bottom-4 right-[21rem] w-64 z-40 rounded-xl shadow-2xl bg-indigo-600">
           <div className="flex items-center justify-between px-3 pt-2 text-white">
             <span className="text-xs font-semibold">Calculator</span>
             <button
@@ -84,10 +85,10 @@ export default function CartPanel({
       )}
 
       {/* Ticket header */}
-      <div className="flex items-start justify-between p-4 border-b border-slate-200">
+      <div className="flex items-start justify-between p-4 border-b border-edge">
         <div>
-          <h2 className="font-bold text-slate-900">Ticket #{ticketNumber}</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="font-bold text-fg">Ticket #{ticketNumber}</h2>
+          <p className="text-xs text-fg-subtle">
             {cashierName} · {totals.itemCount} items
           </p>
         </div>
@@ -107,9 +108,9 @@ export default function CartPanel({
       {/* Cart body: empty state OR list of lines */}
       {isEmpty ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
-          <div className="w-20 h-20 rounded-xl bg-blue-50 mb-4" />
-          <p className="text-sm font-medium text-slate-700">Your cart is empty.</p>
-          <p className="text-xs text-slate-400 mt-1">
+          <div className="w-20 h-20 rounded-xl bg-indigo-500/10 border border-indigo-500/20 mb-4" />
+          <p className="text-sm font-medium text-fg">Your cart is empty.</p>
+          <p className="text-xs text-fg-muted mt-1">
             Tap an item from the menu to start a new order.
           </p>
         </div>
@@ -119,19 +120,19 @@ export default function CartPanel({
             // Line total = unit price × quantity
             const lineTotal = Number(line.item.price) * line.quantity
             return (
-              <div key={line.item.id} className="bg-slate-50 rounded-lg p-2">
+              <div key={line.item.id} className="bg-muted rounded-lg p-2 border border-edge/60">
                 {/* Top row: name + unit price on the left, line total + remove on the right */}
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">
+                    <p className="text-sm font-medium text-fg truncate">
                       {line.item.name}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-fg-subtle">
                       {formatRs(line.item.price)} each
                     </p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-sm font-semibold text-slate-900">
+                    <p className="text-sm font-semibold text-fg">
                       {formatRs(lineTotal)}
                     </p>
                     <button
@@ -149,15 +150,15 @@ export default function CartPanel({
                   <button
                     onClick={() => onUpdateQty(line.item.id, line.quantity - 1)}
                     aria-label={`Decrease ${line.item.name}`}
-                    className="w-6 h-6 rounded bg-slate-200 text-slate-700 text-sm"
+                    className="w-6 h-6 rounded bg-chip text-fg text-sm hover:bg-hover"
                   >
                     −
                   </button>
-                  <span className="w-5 text-center text-sm">{line.quantity}</span>
+                  <span className="w-5 text-center text-sm text-fg">{line.quantity}</span>
                   <button
                     onClick={() => onUpdateQty(line.item.id, line.quantity + 1)}
                     aria-label={`Increase ${line.item.name}`}
-                    className="w-6 h-6 rounded bg-blue-600 text-white text-sm"
+                    className="w-6 h-6 rounded bg-indigo-600 text-white text-sm"
                   >
                     +
                   </button>
@@ -168,8 +169,8 @@ export default function CartPanel({
         </div>
       )}
 
-      {/* Bottom checkout section — white/blue to match the page */}
-      <div className="border-t border-slate-200 p-4 space-y-3">
+      {/* Bottom checkout section */}
+      <div className="border-t border-edge p-4 space-y-3">
         {/* Action row: Cash payment, Discount / Calc open panels */}
         <div className="grid grid-cols-3 gap-2">
           {/* Payment method */}
@@ -178,8 +179,8 @@ export default function CartPanel({
             className={
               'py-2 rounded-lg text-xs font-medium border ' +
               (paymentMethod === 'CASH'
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50')
+                ? 'bg-indigo-600 text-white border-indigo-600'
+                : 'bg-surface text-fg-muted border-edge hover:bg-hover hover:text-fg')
             }
           >
             Cash
@@ -191,8 +192,8 @@ export default function CartPanel({
             className={
               'py-2 rounded-lg text-xs font-medium border ' +
               (activePanel === 'customize'
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50')
+                ? 'bg-indigo-600 text-white border-indigo-600'
+                : 'bg-surface text-fg-muted border-edge hover:bg-hover hover:text-fg')
             }
           >
             Dis %
@@ -204,8 +205,8 @@ export default function CartPanel({
             className={
               'py-2 rounded-lg text-xs font-medium border ' +
               (activePanel === 'calc'
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50')
+                ? 'bg-indigo-600 text-white border-indigo-600'
+                : 'bg-surface text-fg-muted border-edge hover:bg-hover hover:text-fg')
             }
           >
             Calc
@@ -214,9 +215,9 @@ export default function CartPanel({
 
         {/* Customize panel: user sets tax % and discount % */}
         {activePanel === 'customize' && (
-          <div className="rounded-xl border border-slate-200 p-3 space-y-3 bg-slate-50">
+          <div className="rounded-xl border border-edge p-3 space-y-3 bg-muted">
             <label className="block">
-              <span className="text-xs font-medium text-slate-600">
+              <span className="text-xs font-medium text-fg-muted">
                 Discount (%)
               </span>
               <input
@@ -225,25 +226,25 @@ export default function CartPanel({
                 max="100"
                 value={discountRate}
                 onChange={(e) => onDiscountChange(Number(e.target.value))}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-edge bg-surface px-2 py-1 text-sm text-fg focus:border-indigo-500 focus:outline-none"
               />
             </label>
             <label className="block">
-              <span className="text-xs font-medium text-slate-600">Tax (%)</span>
+              <span className="text-xs font-medium text-fg-muted">Tax (%)</span>
               <input
                 type="number"
                 min="0"
                 max="100"
                 value={taxRate}
                 onChange={(e) => onTaxChange(Number(e.target.value))}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-edge bg-surface px-2 py-1 text-sm text-fg focus:border-indigo-500 focus:outline-none"
               />
             </label>
           </div>
         )}
 
         {/* Money summary */}
-        <div className="space-y-1 text-xs text-slate-600">
+        <div className="space-y-1 text-xs text-fg-muted">
           <div className="flex justify-between">
             <span>Subtotal</span>
             <span>{formatRs(totals.subtotal)}</span>
@@ -259,7 +260,7 @@ export default function CartPanel({
             <span>{formatRs(totals.taxAmount)}</span>
           </div>
           {totals.extraCharge > 0 && (
-            <div className="flex justify-between items-center text-blue-600">
+            <div className="flex justify-between items-center text-accent">
               <span className="flex items-center gap-1">
                 Add-on
                 <button
@@ -276,9 +277,9 @@ export default function CartPanel({
         </div>
 
         {/* Grand total */}
-        <div className="flex justify-between items-center border-t border-slate-200 pt-3">
-          <span className="text-sm font-medium text-slate-700">Total</span>
-          <span className="text-xl font-bold text-blue-600">
+        <div className="flex justify-between items-center border-t border-edge pt-3">
+          <span className="text-sm font-medium text-fg">Total</span>
+          <span className="text-xl font-bold text-accent">
             {formatRs(totals.total)}
           </span>
         </div>
@@ -286,7 +287,7 @@ export default function CartPanel({
         <button
           onClick={onCheckout}
           disabled={isEmpty || isSaving}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg py-2.5 text-sm font-semibold"
+          className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg py-2.5 text-sm font-semibold"
         >
           {isSaving ? 'Saving…' : 'Checkout'}
         </button>

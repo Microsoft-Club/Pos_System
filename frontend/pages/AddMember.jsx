@@ -53,31 +53,31 @@ export default function AddMember() {
     <div className="max-w-lg mx-auto">
       <form
         onSubmit={handleSubmit}
-        className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-5"
+        className="bg-surface border border-edge rounded-2xl p-6 md:p-8 shadow-xl space-y-5"
       >
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <UserPlus className="w-6 h-6 text-indigo-400" />
+          <h1 className="text-2xl font-bold text-fg flex items-center gap-2">
+            <UserPlus className="w-6 h-6 text-accent" />
             Add Member
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-fg-muted mt-1">
             Invite an existing user to your company as Owner or Cashier.
           </p>
         </div>
 
         {error && (
-          <div className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+          <div className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-danger-fg text-sm">
             {error}
           </div>
         )}
         {success && (
-          <div className="px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm">
+          <div className="px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-success-fg text-sm">
             {success}
           </div>
         )}
 
         <div>
-          <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+          <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
             User Email
           </label>
           <input
@@ -86,13 +86,13 @@ export default function AddMember() {
             value={form.email}
             onChange={handleChange}
             required
-            className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+            className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2.5 text-sm text-fg focus:outline-none focus:border-indigo-500"
             placeholder="member@example.com"
           />
         </div>
 
         <div>
-          <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+          <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
             Role
           </label>
           <select
@@ -100,7 +100,7 @@ export default function AddMember() {
             value={form.role}
             onChange={handleChange}
             required
-            className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+            className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2.5 text-sm text-fg focus:outline-none focus:border-indigo-500"
           >
             <option value="OWNER">OWNER</option>
             <option value="CASHIER">CASHIER</option>

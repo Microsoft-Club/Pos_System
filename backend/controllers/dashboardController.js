@@ -9,12 +9,12 @@ export const getDashboardStats = async (req, res, next) => {
                 COALESCE(SUM(oi.quantity * i.price), 0) AS today_sales,
                 COUNT(DISTINCT o.id) AS today_orders,
                 COALESCE(SUM(oi.quantity), 0) AS items_sold
-            FROM orders o
+            FROM (SELECT * FROM orders WHERE company_id = $1) o
             JOIN order_items oi ON o.id = oi.order_id
             JOIN items i ON oi.item_id = i.id
-            WHERE o.created_at = CURRENT_DATE;
+            WHERE DATE(o.created_at) = CURRENT_DATE;
         `;
-        const statsResult = await pool.query(statsQuery);
+        const statsResult = await pool.query(statsQuery, [req.user.company_id]);
         const todaySales = parseFloat(statsResult.rows[0].today_sales);
         const todayOrders = parseInt(statsResult.rows[0].today_orders);
         const itemsSold = parseInt(statsResult.rows[0].items_sold);
@@ -51,15 +51,15 @@ export const getDashboardStats = async (req, res, next) => {
                 o.created_at,
                 STRING_AGG(CONCAT(oi.quantity, 'x ', i.name), ', ') AS items,
                 SUM(oi.quantity * i.price) AS total
-            FROM orders o
+            FROM (SELECT * FROM orders WHERE company_id = $1) o
             JOIN order_items oi ON o.id = oi.order_id
             JOIN items i ON oi.item_id = i.id
-            WHERE o.created_at = CURRENT_DATE
+            WHERE DATE(o.created_at) = CURRENT_DATE
             GROUP BY o.id, o.created_at
             ORDER BY o.id DESC
             LIMIT 5;
         `;
-        const recentOrdersResult = await pool.query(recentOrdersQuery);
+        const recentOrdersResult = await pool.query(recentOrdersQuery, [req.user.company_id]);
         const recentOrders = recentOrdersResult.rows.map(row => ({
             id: row.id,
             time: new Date().toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' }),

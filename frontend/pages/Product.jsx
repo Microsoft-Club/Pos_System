@@ -153,13 +153,13 @@ export default function Product() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/40 p-5 rounded-2xl border border-slate-800/80">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-muted/40 p-5 rounded-2xl border border-edge/80">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            <Package className="w-6 h-6 text-indigo-400" />
+          <h1 className="text-2xl font-bold tracking-tight text-fg flex items-center gap-2">
+            <Package className="w-6 h-6 text-accent" />
             Product Management
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-fg-muted">
             Add, edit, and remove menu items for your company.
           </p>
         </div>
@@ -167,7 +167,7 @@ export default function Product() {
         <div className="flex items-center gap-3">
           <button
             onClick={fetchItems}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition-colors"
+            className="p-2 rounded-lg bg-chip hover:bg-edge-strong text-fg-muted hover:text-fg border border-edge-strong/60 transition-colors"
             title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -183,7 +183,7 @@ export default function Product() {
       </div>
 
       {error && (
-        <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+        <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-danger-fg text-sm">
           {error}
         </div>
       )}
@@ -191,12 +191,12 @@ export default function Product() {
       {showForm && (
         <form
           onSubmit={handleAdd}
-          className="bg-[#0f1626] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4"
+          className="bg-surface border border-edge rounded-2xl p-6 shadow-xl space-y-4"
         >
-          <h2 className="text-base font-bold text-white">New Menu Item</h2>
+          <h2 className="text-base font-bold text-fg">New Menu Item</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+              <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
                 Name
               </label>
               <input
@@ -204,12 +204,12 @@ export default function Product() {
                 value={form.name}
                 onChange={handleChange}
                 placeholder="e.g. Menu Item Name"
-                className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:border-indigo-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+              <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
                 Price (Rs.)
               </label>
               <input
@@ -220,12 +220,12 @@ export default function Product() {
                 value={form.price}
                 onChange={handleChange}
                 placeholder="320.00"
-                className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:border-indigo-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+              <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
                 Type
               </label>
               <input
@@ -233,7 +233,7 @@ export default function Product() {
                 value={form.type}
                 onChange={handleChange}
                 placeholder="e.g. Food, Drink"
-                className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:border-indigo-500"
                 required
               />
             </div>
@@ -242,7 +242,7 @@ export default function Product() {
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/25 disabled:opacity-50"
+              className="px-5 py-2 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-success-fg text-sm font-semibold hover:bg-emerald-500/25 disabled:opacity-50"
             >
               {submitting ? 'Adding...' : 'Save Item'}
             </button>
@@ -255,14 +255,14 @@ export default function Product() {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="h-36 bg-[#0f1626] border border-slate-800 rounded-2xl animate-pulse"
+              className="h-36 bg-surface border border-edge rounded-2xl animate-pulse"
             />
           ))}
         </div>
       ) : items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center bg-[#0f1626] border border-slate-800 rounded-2xl">
-          <Package className="w-12 h-12 text-slate-600 mb-3" />
-          <p className="text-slate-400 text-sm">No items yet. Add your first menu item.</p>
+        <div className="flex flex-col items-center justify-center py-16 text-center bg-surface border border-edge rounded-2xl">
+          <Package className="w-12 h-12 text-fg-subtle mb-3" />
+          <p className="text-fg-muted text-sm">No items yet. Add your first menu item.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

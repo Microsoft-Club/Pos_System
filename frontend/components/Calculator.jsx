@@ -3,7 +3,6 @@ import { useState } from 'react'
 /**
  * A simple POS calculator.
  * Evaluates left-to-right (like a basic physical calculator, no operator precedence).
- * Matches the page's blue/white color scheme.
  *
  * props:
  *   onAddToBill = fn(amount) — adds the current value as an add-on charge
@@ -107,7 +106,7 @@ export default function Calculator({ onAddToBill }) {
   }
 
   return (
-    <div className="bg-blue-600 rounded-xl p-3">
+    <div className="bg-indigo-600 rounded-xl p-3">
       {/* Display screen */}
       <div className="bg-white rounded-lg px-3 py-2 mb-3 text-right text-lg font-semibold text-slate-800 truncate">
         {display}
@@ -122,9 +121,9 @@ export default function Calculator({ onAddToBill }) {
             className={
               'py-2 rounded-lg text-sm font-semibold ' +
               (key.kind === 'op'
-                ? 'bg-blue-500 text-white hover:bg-blue-400'
+                ? 'bg-indigo-500 text-white hover:bg-indigo-400'
                 : key.kind === 'equals'
-                ? 'bg-blue-800 text-white hover:bg-blue-700'
+                ? 'bg-indigo-800 text-white hover:bg-indigo-700'
                 : key.kind === 'clear'
                 ? 'bg-rose-500 text-white hover:bg-rose-400'
                 : 'bg-white text-slate-800 hover:bg-slate-100')
@@ -138,7 +137,7 @@ export default function Calculator({ onAddToBill }) {
       {/* Add the calculated amount to the bill as an add-on */}
       <button
         onClick={handleAddToBill}
-        className="mt-2 w-full bg-white text-blue-700 rounded-lg py-2 text-sm font-semibold hover:bg-slate-100"
+        className="mt-2 w-full bg-white text-indigo-700 rounded-lg py-2 text-sm font-semibold hover:bg-slate-100"
       >
         + Add to Bill
       </button>

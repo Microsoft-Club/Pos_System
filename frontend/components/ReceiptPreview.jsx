@@ -7,7 +7,7 @@ import { formatMoney, formatDateTime } from "../utils/receiptTemplate.js";
 export default function ReceiptPreview({ order, paymentMethod = "CASH" }) {
   if (!order) {
     return (
-      <div className="receipt-preview flex items-center justify-center min-h-[420px] text-slate-400 text-sm">
+      <div className="receipt-preview flex items-center justify-center min-h-[420px] text-fg-muted text-sm">
         Select an order to preview the receipt
       </div>
     );
@@ -21,21 +21,11 @@ export default function ReceiptPreview({ order, paymentMethod = "CASH" }) {
     <div className="receipt-preview mx-auto w-[80mm] max-w-[80mm] bg-white text-slate-900 shadow-2xl shadow-black/40 border border-slate-200">
       <div className="px-4 py-5 font-mono text-[11px] leading-relaxed">
         <div className="text-center mb-4">
-          {order.company_logo ? (
-            <img
-              src={order.company_logo}
-              alt={order.company_name || "Shop"}
-              className="mx-auto mb-2 h-10 w-10 object-contain"
-            />
-          ) : (
-            <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/15 text-amber-700 text-xs font-bold tracking-wide">
-              BJ
-            </div>
-          )}
+          
           <div className="text-sm font-bold tracking-wide uppercase">
             {order.company_name || "Company"}
           </div>
-          <div className="text-[10px] text-slate-500 mt-0.5">POS Terminal 01</div>
+          <div className="text-[10px] text-fg-subtle mt-0.5">POS Terminal 01</div>
         </div>
 
         <div className="border-t border-dashed border-slate-300 my-2" />
@@ -83,10 +73,10 @@ export default function ReceiptPreview({ order, paymentMethod = "CASH" }) {
 
         <div className="border-t border-dashed border-slate-300 my-3" />
 
-        <p className="text-center text-[10px] text-slate-400 mt-4 mb-1">
+        <p className="text-center text-[10px] text-fg-muted mt-4 mb-1">
           Thank you for dining with us!
         </p>
-        <p className="text-center text-[9px] text-slate-300">
+        <p className="text-center text-[9px] text-fg-muted">
           *** Customer Copy ***
         </p>
       </div>

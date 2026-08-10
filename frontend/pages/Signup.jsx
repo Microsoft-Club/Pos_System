@@ -62,32 +62,32 @@ export default function Signup() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-slate-100 font-sans">
-      <header className="h-16 bg-[#0f1626]/90 backdrop-blur-md border-b border-slate-800/80 sticky top-0 z-30 px-5 md:px-8 flex items-center">
+    <div className="min-h-screen bg-page text-fg font-sans">
+      <header className="h-16 bg-surface/90 backdrop-blur-md border-b border-edge/80 sticky top-0 z-30 px-5 md:px-8 flex items-center">
         <Navbar showBrand user={user} setUser={setUser}/>
       </header>
 
       <main className="flex items-center justify-center px-4 py-12 md:py-16">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-md bg-[#0f1626] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-4"
+          className="w-full max-w-md bg-surface border border-edge rounded-2xl p-6 md:p-8 shadow-xl space-y-4"
         >
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <UserPlus className="w-6 h-6 text-indigo-400" />
+            <h1 className="text-2xl font-bold text-fg flex items-center gap-2">
+              <UserPlus className="w-6 h-6 text-accent" />
               Signup
             </h1>
-            <p className="text-xs text-slate-400 mt-1">Create an account to start using the POS.</p>
+            <p className="text-xs text-fg-muted mt-1">Create an account to start using the POS.</p>
           </div>
 
           {error && (
-            <div className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+            <div className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-danger-fg text-sm">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+            <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
               Name
             </label>
             <input
@@ -96,13 +96,13 @@ export default function Signup() {
               value={form.name}
               onChange={handleChange}
               required
-              className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2.5 text-sm text-fg focus:outline-none focus:border-indigo-500"
               placeholder="Your name"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+            <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
               Email
             </label>
             <input
@@ -111,13 +111,13 @@ export default function Signup() {
               value={form.email}
               onChange={handleChange}
               required
-              className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2.5 text-sm text-fg focus:outline-none focus:border-indigo-500"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+            <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
               Password
             </label>
             <div className="relative">
@@ -127,13 +127,13 @@ export default function Signup() {
                 value={form.password}
                 onChange={handleChange}
                 required
-                className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 pr-10 text-sm text-white focus:outline-none focus:border-indigo-500"
+                className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2.5 pr-10 text-sm text-fg focus:outline-none focus:border-indigo-500"
                 placeholder="••••••••"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-200"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-fg-muted hover:text-fg"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -142,7 +142,7 @@ export default function Signup() {
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+            <label className="block text-[10px] uppercase tracking-wider text-fg-muted font-semibold mb-1">
               Confirm Password
             </label>
             <div className="relative">
@@ -152,13 +152,13 @@ export default function Signup() {
                 value={form.confirm_password}
                 onChange={handleChange}
                 required
-                className="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2.5 pr-10 text-sm text-white focus:outline-none focus:border-indigo-500"
+                className="w-full bg-muted/60 border border-edge-strong rounded-lg px-3 py-2.5 pr-10 text-sm text-fg focus:outline-none focus:border-indigo-500"
                 placeholder="••••••••"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm((v) => !v)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-200"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-fg-muted hover:text-fg"
                 aria-label={showConfirm ? 'Hide password' : 'Show password'}
               >
                 {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -174,9 +174,9 @@ export default function Signup() {
             {loading ? 'Creating account...' : 'Create Account'}
           </button>
 
-          <p className="text-center text-xs text-slate-400">
+          <p className="text-center text-xs text-fg-muted">
             Already have an account?{' '}
-            <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-semibold">
+            <Link to="/login" className="text-accent hover:text-accent-soft font-semibold">
               Login
             </Link>
           </p>
