@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import Calculator from './Calculator.jsx'
-import { formatRs } from '../../utils/money.js'
 
 /**
  * CART AND BILLING SECTION (right-hand ticket column)

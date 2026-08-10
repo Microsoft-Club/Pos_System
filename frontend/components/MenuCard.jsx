@@ -1,4 +1,3 @@
-import { formatRs } from '../../utils/money.js'
 
 /*
  * MenuCard Component
