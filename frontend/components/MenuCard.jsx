@@ -10,8 +10,6 @@ export default function MenuCard({item,onAddToCart}) {
 
         onClick={()=>onAddToCart(item)}
         className="bg-white border border-slate-200 rounded-xl p-3 text-left hover:border-blue-400 hover:shadow-md transition">
-            <div className="h-24 bg-slate-100 rounded-lg mb-3"/>
-
 
             <h3 className="text-sm font-semibold text-slate-900 truncate">
                 {item.name}
@@ -21,7 +19,7 @@ export default function MenuCard({item,onAddToCart}) {
                     {item.type}
                 </span>
                 <span className="text-lg font-bold text-slate-600">
-                    ${Number(item.price).toFixed(2)}
+                    Rs.{Number(item.price).toFixed(2)}
                 </span>
             </div>
         </button>

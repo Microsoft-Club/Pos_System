@@ -46,18 +46,18 @@ export default function CartPanel() {
         <div className="space-y-1 text-xs text-slate-300">
           <div className="flex justify-between">
             <span>Subtotal</span>
-            <span>$0.00</span>
+            <span>Rs 0.00</span>
           </div>
           <div className="flex justify-between">
             <span>Tax</span>
-            <span>$0.00</span>
+            <span>Rs 0.00</span>
           </div>
         </div>
 
         {/* Grand total */}
         <div className="flex justify-between items-center border-t border-slate-700 pt-3">
           <span className="text-sm font-medium">Total</span>
-          <span className="text-xl font-bold">$0.00</span>
+          <span className="text-xl font-bold">Rs 0.00</span>
         </div>
 
         <button className="w-full bg-blue-600 hover:bg-blue-700 rounded-lg py-2.5 text-sm font-semibold">
