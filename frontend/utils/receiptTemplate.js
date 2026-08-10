@@ -22,6 +22,9 @@ export const formatDateTime = (value) => {
   };
 };
 
+/** Standard shop/mart thermal paper width (80mm ESC/POS). */
+export const THERMAL_WIDTH_MM = 80;
+
 const escapeHtml = (value) =>
   String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -34,17 +37,17 @@ const row = (left, right, opts = {}) => {
   const rightStyle = opts.rightStyle || "";
   const rowStyle = opts.rowStyle || "";
   return `<tr style="${rowStyle}">
-    <td style="padding:2px 0;vertical-align:top;word-break:break-word;${leftStyle}">${left}</td>
-    <td style="padding:2px 0;vertical-align:top;text-align:right;white-space:nowrap;padding-left:8px;${rightStyle}">${right}</td>
+    <td style="padding:4px 0;vertical-align:top;word-break:break-word;width:65%;${leftStyle}">${left}</td>
+    <td style="padding:4px 0;vertical-align:top;text-align:right;white-space:nowrap;width:35%;${rightStyle}">${right}</td>
   </tr>`;
 };
 
 const divider = () =>
-  `<tr><td colspan="2" style="padding:8px 0;"><div style="border-top:1px dashed #94a3b8;"></div></td></tr>`;
+  `<tr><td colspan="2" style="padding:10px 0;"><div style="border-top:1px dashed #64748b;"></div></td></tr>`;
 
 /**
- * Self-contained receipt HTML with table layout + inline styles.
- * Tables print more reliably than flexbox across browsers.
+ * Full-width 80mm thermal receipt HTML (inline styles).
+ * Designed to fill the entire printable page of a shop POS printer.
  */
 export function buildReceiptPrintHtml(order, paymentMethod = "CASH") {
   if (!order) return "";
@@ -55,14 +58,18 @@ export function buildReceiptPrintHtml(order, paymentMethod = "CASH") {
   const companyName = escapeHtml(order.company_name || "Company");
 
   const logoHtml = order.company_logo
-    ? `<img src="${escapeHtml(order.company_logo)}" alt="${companyName}" width="40" height="40" style="display:block;margin:0 auto 8px;object-fit:contain;" />`
-    : `<div style="margin:0 auto 8px;width:40px;height:40px;line-height:40px;border-radius:50%;background:#fef3c7;color:#b45309;font-size:12px;font-weight:700;text-align:center;letter-spacing:0.05em;">BJ</div>`;
+    ? `<img src="${escapeHtml(order.company_logo)}" alt="${companyName}" width="48" height="48" style="display:block;margin:0 auto 10px;object-fit:contain;" />`
+    : `<div style="margin:0 auto 10px;width:48px;height:48px;line-height:48px;border-radius:50%;background:#fef3c7;color:#b45309;font-size:14px;font-weight:700;text-align:center;letter-spacing:0.05em;">BJ</div>`;
 
   const itemsHtml = (order.items || [])
     .map((item) =>
       row(
         escapeHtml(`${item.quantity}x ${item.name}`),
-        escapeHtml(formatMoney(item.line_total))
+        escapeHtml(formatMoney(item.line_total)),
+        {
+          leftStyle: "font-size:13px;",
+          rightStyle: "font-size:13px;",
+        }
       )
     )
     .join("");
@@ -70,48 +77,48 @@ export function buildReceiptPrintHtml(order, paymentMethod = "CASH") {
   const taxHtml =
     (order.tax_rate || 0) > 0
       ? row(`Tax (${taxRatePct}%)`, escapeHtml(formatMoney(order.tax)), {
-          leftStyle: "color:#475569;",
-          rightStyle: "color:#475569;",
+          leftStyle: "font-size:12px;color:#334155;",
+          rightStyle: "font-size:12px;color:#334155;",
         })
       : "";
 
   return `
-<div id="receipt-print-root" style="width:302px;max-width:302px;margin:0;padding:0;background:#ffffff;color:#0f172a;font-family:'Courier New',Courier,monospace;font-size:12px;line-height:1.45;">
-  <div style="padding:16px 14px;">
-    <div style="text-align:center;margin-bottom:12px;">
+<div id="receipt-print-root" style="width:80mm;max-width:80mm;min-width:80mm;margin:0;padding:0;background:#ffffff;color:#0f172a;font-family:'Courier New',Courier,monospace;font-size:13px;line-height:1.5;box-sizing:border-box;">
+  <div style="padding:5mm 4mm;box-sizing:border-box;width:100%;">
+    <div style="text-align:center;margin-bottom:4mm;">
       ${logoHtml}
-      <div style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;">${companyName}</div>
-      <div style="font-size:10px;color:#64748b;margin-top:2px;">POS Terminal 01</div>
+      <div style="font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">${companyName}</div>
+      <div style="font-size:11px;color:#475569;margin-top:3px;">POS Terminal 01</div>
     </div>
 
     <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
       ${divider()}
       ${row(`Order #${escapeHtml(order.id)}`, escapeHtml(method), {
-        leftStyle: "font-size:10px;color:#475569;",
-        rightStyle: "font-size:10px;color:#475569;",
+        leftStyle: "font-size:11px;color:#334155;",
+        rightStyle: "font-size:11px;color:#334155;",
       })}
       ${row(escapeHtml(date), escapeHtml(time), {
-        leftStyle: "font-size:10px;color:#475569;",
-        rightStyle: "font-size:10px;color:#475569;",
+        leftStyle: "font-size:11px;color:#334155;",
+        rightStyle: "font-size:11px;color:#334155;",
       })}
       ${divider()}
       ${itemsHtml}
       ${divider()}
       ${row("Subtotal", escapeHtml(formatMoney(order.subtotal)), {
-        leftStyle: "color:#475569;",
-        rightStyle: "color:#475569;",
+        leftStyle: "font-size:12px;color:#334155;",
+        rightStyle: "font-size:12px;color:#334155;",
       })}
       ${taxHtml}
       ${row("Total", escapeHtml(formatMoney(order.total)), {
-        leftStyle: "font-size:13px;font-weight:700;",
-        rightStyle: "font-size:13px;font-weight:700;",
+        leftStyle: "font-size:15px;font-weight:700;",
+        rightStyle: "font-size:15px;font-weight:700;",
         rowStyle: "font-weight:700;",
       })}
       ${divider()}
     </table>
 
-    <p style="text-align:center;font-size:10px;color:#94a3b8;margin:12px 0 4px;">Thank you for dining with us!</p>
-    <p style="text-align:center;font-size:9px;color:#cbd5e1;margin:0;">*** Customer Copy ***</p>
+    <p style="text-align:center;font-size:11px;color:#64748b;margin:4mm 0 2mm;">Thank you for dining with us!</p>
+    <p style="text-align:center;font-size:10px;color:#94a3b8;margin:0;">*** Customer Copy ***</p>
   </div>
 </div>`;
 }
