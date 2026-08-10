@@ -6,17 +6,24 @@
 }
 
 @media print {
-  /* One receipt page, sized to the 80mm roll and content height. */
+  /*
+   * Shop/mart thermal roll: 80mm wide (standard ESC/POS).
+   * Height is set dynamically by printReceipt.js to fit content.
+   */
   @page {
-    size: 80mm auto;
+    size: 80mm 200mm;
     margin: 0;
   }
 
   html,
   body {
+    width: 80mm !important;
+    max-width: 80mm !important;
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* Hide the entire app (React mounts into #root). */
@@ -24,16 +31,23 @@
     display: none !important;
   }
 
-  /* Show only the injected receipt. */
+  /* Show only the injected receipt — full page width. */
   #receipt-print-mount {
     display: block !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   #receipt-print-mount #receipt-print-root {
     width: 80mm !important;
     max-width: 80mm !important;
+    min-width: 80mm !important;
     margin: 0 !important;
+    padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
+    box-sizing: border-box !important;
   }
 }

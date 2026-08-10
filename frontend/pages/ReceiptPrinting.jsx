@@ -130,7 +130,9 @@ export default function ReceiptPrinting() {
           paymentMethod
         );
         setPrinting(false);
-        setStatusMsg("Print dialog opened. Choose your printer (80mm / 58mm) and print.");
+        setStatusMsg(
+          "Print dialog opened. Use paper size 80mm (thermal), margins None, scale 100%."
+        );
       }, 80);
     } catch (err) {
       console.error(err);
@@ -335,7 +337,7 @@ export default function ReceiptPrinting() {
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h2 className="text-sm font-bold text-white">Receipt Preview</h2>
-                <p className="text-xs text-slate-400">80mm thermal layout</p>
+                <p className="text-xs text-slate-400">80mm shop thermal roll</p>
               </div>
               <button
                 type="button"
