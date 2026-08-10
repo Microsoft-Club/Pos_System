@@ -1,14 +1,17 @@
+import { useOutletContext } from "react-router-dom"
+
 /**
  * CART AND BILLING SECTION
  * Right-hand ticket column from the POS design
  */
 export default function CartPanel() {
+  const {user} = useOutletContext();
+
   return (
     <aside className="w-80 bg-white border-l border-slate-200 flex flex-col">
       <div className="flex items-start justify-between p-4 border-b border-slate-200">
         <div>
           <h2 className="font-bold text-slate-900">Ticket #402</h2>
-          <p className="text-xs text-slate-500">John Doe</p>
         </div>
         <button className="text-xs font-medium text-rose-500 hover:underline">
           Clear All
