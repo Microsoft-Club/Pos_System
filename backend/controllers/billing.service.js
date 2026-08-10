@@ -32,15 +32,18 @@ const result = await pool.query(query,[companyId])
     type:"Full"},....]*/
     return result.rows; // returns the array of object
 } 
-const TAX_RATE=0 // AS right now we dont have a specific knowldege about the tax
-// const TAX_RATE=tax_rate
-
 /* AS now company has to make a sale,
 for calculating a specific cart selected by one customer  we will
 
-cartItem=[{item_id:1,quantity:2...}]*/
+cartItem=[{item_id:1,quantity:2...}]
+options={ taxRate, discountRate, extraCharge, paymentMethod } — decided by the user */
 
-export async function CreateOrderForCompany(companyId,cartItems){
+export async function CreateOrderForCompany(companyId,cartItems,options={}){
+    // Read user-decided values; default to 0 / CASH if missing
+    const taxRate=Number(options.taxRate)||0;         // percent
+    const discountRate=Number(options.discountRate)||0; // percent
+    const extraCharge=Number(options.extraCharge)||0;   // Rs add-on
+    const paymentMethod=options.paymentMethod||"CASH";
     if (!Array.isArray(cartItems)|| cartItems.length===0){
         throw new Error("Cart is Empty!");
     }
@@ -99,19 +102,28 @@ export async function CreateOrderForCompany(companyId,cartItems){
             line_total:lineTotal,// total price for the line item
         };
     });
-    const tax=Number((subtotal*TAX_RATE).toFixed(2));// calculate tax based on subtotal and tax rate
-    const total=Number((subtotal+tax).toFixed(2));// calculate total price including tax
+    // Discount comes off the subtotal first
+    const discountAmount=Number((subtotal*(discountRate/100)).toFixed(2));
+    const taxableBase=subtotal-discountAmount;
+    // Tax applies to the amount left after discount
+    const tax=Number((taxableBase*(taxRate/100)).toFixed(2));
+    // Add-on charge is added on top of everything
+    const total=Number((taxableBase+tax+extraCharge).toFixed(2));
 
     // Saving the order and order lines to the database
     const client=await pool.connect();// get a client from the pool
     try{
         await client.query("BEGIN"); //Start a transaction
-        // Order Insert Query
+        // Order Insert Query — store the full money breakdown
         const orderInsertQuery=`
-        INSERT INTO orders(company_id)
-        VALUES($1)
+        INSERT INTO orders
+        (company_id, subtotal, discount_rate, discount_amount, tax_rate, tax_amount, extra_charge, total, payment_method)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING id`;
-        const orderResult=await client.query(orderInsertQuery,[companyId]);
+        const orderResult=await client.query(orderInsertQuery,[
+            companyId, subtotal, discountRate, discountAmount,
+            taxRate, tax, extraCharge, total, paymentMethod,
+        ]);
         const orderId=orderResult.rows[0].id; 
         // get the order id from the result (newly created order 
         // automatically created by the database)
@@ -129,8 +141,13 @@ export async function CreateOrderForCompany(companyId,cartItems){
         return{
             order_id:orderId,
             subtotal,
-            tax,
+            discount_rate:discountRate,
+            discount_amount:discountAmount,
+            tax_rate:taxRate,
+            tax_amount:tax,
+            extra_charge:extraCharge,
             total,
+            payment_method:paymentMethod,
             order_lines:orderLines,
         };
     } 
