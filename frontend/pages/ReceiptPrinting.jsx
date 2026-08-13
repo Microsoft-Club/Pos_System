@@ -58,6 +58,7 @@ export default function ReceiptPrinting() {
     setStatusMsg("");
   };
 
+
   const handlePrint = async () => {
     if (!selectedOrder) return;
     setPrinting(true);
@@ -100,6 +101,21 @@ export default function ReceiptPrinting() {
       setStatusMsg("Print failed. Check printer connection and try again.");
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = e => {
+      if(e.ctrlKey && e.key.toLowerCase() === 'p'){
+        e.preventDefault();
+        handlePrint();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [handlePrint]);
 
   return (
     <div className="space-y-6">

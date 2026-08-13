@@ -1,0 +1,10 @@
+shortcuts:
+ctrl + p for printing receipt
+F4 for discount
+F9 for checkout
+tab for moving to next item
+shift + tab for moving to previous item
+ctrl + x for clearing transaction
+ctrl + m for manager menu
+ctrl + d for dashboard
+ctrl + n for adding new product and closing the add product form

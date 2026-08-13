@@ -151,6 +151,20 @@ export default function Product() {
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = e => {
+      if(e.ctrlKey && e.key.toLowerCase() === 'i'){
+        setShowForm((v) => !v);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, []);
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-muted/40 p-5 rounded-2xl border border-edge/80">

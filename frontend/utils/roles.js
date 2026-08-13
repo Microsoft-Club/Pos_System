@@ -4,7 +4,7 @@ import {
   ReceiptText,
   Printer,
   ChefHat,
-  UserPlus,
+  Users,
 } from 'lucide-react';
 
 export const ALL_NAV_ITEMS = [
@@ -13,7 +13,7 @@ export const ALL_NAV_ITEMS = [
   { name: 'Products', href: '/products', icon: Package, roles: ['MASTER_ADMIN', 'OWNER'] },
   { name: 'Billing', href: '/billing', icon: ReceiptText, roles: ['MASTER_ADMIN', 'CASHIER'] },
   { name: 'Receipts', href: '/receipts', icon: Printer, roles: ['MASTER_ADMIN', 'CASHIER'] },
-  { name: 'Add Member', href: '/add-member', icon: UserPlus, roles: ['MASTER_ADMIN'] },
+  { name: 'Manage Members', href: '/manage-member', icon: Users, roles: ['MASTER_ADMIN'] },
 ];
 
 export function getNavItemsForUser(user) {

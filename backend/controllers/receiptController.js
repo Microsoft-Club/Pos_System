@@ -49,14 +49,14 @@ export const getRecentReceipts = async (req, res, next) => {
                 NULLIF(c.logo, '') AS company_logo,
                 COALESCE(SUM(oi.quantity * i.price), 0) AS order_total
             FROM orders o
-            JOIN company c ON c.id = o.company_id
+            JOIN (SELECT * FROM company WHERE id = $2) c ON c.id = o.company_id
             JOIN order_items oi ON oi.order_id = o.id
             JOIN items i ON i.id = oi.item_id
             GROUP BY o.id, o.created_at, o.company_id, c.name, c.logo
             ORDER BY o.id DESC
             LIMIT $1;
         `;
-        const headers = await pool.query(headerQuery, [Math.min(parseInt(limit, 10) || 20, 50)]);
+        const headers = await pool.query(headerQuery, [Math.min(parseInt(limit, 10) || 20, 50), req.user.company_id]);
 
         const orderIds = headers.rows.map((row) => row.id);
         const itemsQuery = `
@@ -107,9 +107,9 @@ export const getReceiptById = async (req, res, next) => {
                 NULLIF(c.logo, '') AS company_logo
             FROM orders o
             JOIN company c ON c.id = o.company_id
-            WHERE o.id = $1;
+            WHERE company_id = $1 AND o.id = $2;
         `;
-        const headerResult = await pool.query(headerQuery, [id]);
+        const headerResult = await pool.query(headerQuery, [req.user.company_id, id]);
 
         const itemsQuery = `
             SELECT

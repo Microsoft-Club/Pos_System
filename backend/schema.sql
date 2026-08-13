@@ -63,3 +63,5 @@ CREATE TABLE order_items (
 	FOREIGN KEY(item_id) REFERENCES items(id) ON DELETE CASCADE,
 	PRIMARY KEY(order_id, item_id)
 );
+
+CREATE INDEX IF NOT EXISTS idx_company_id ON orders(company_id);
