@@ -4,12 +4,12 @@ import {
     getReceiptById,
     markReceiptPrinted
 } from "../controllers/receiptController.js";
-import { protect } from "../controllers/authController.js";
+import { authorize, protect } from "../controllers/authController.js";
 
 const router = express.Router();
 
-router.get("/", protect, getRecentReceipts);
-router.get("/:id", protect, getReceiptById);
-router.patch("/:id/print", protect, markReceiptPrinted);
+router.get("/", protect, authorize(['MASTER_ADMIN', 'CASHIER']), getRecentReceipts);
+router.get("/:id", protect, authorize(['MASTER_ADMIN', 'CASHIER']), getReceiptById);
+router.patch("/:id/print", protect, authorize(['MASTER_ADMIN', 'CASHIER']), markReceiptPrinted);
 
 export default router;

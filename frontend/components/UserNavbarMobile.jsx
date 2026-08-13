@@ -3,13 +3,41 @@ import {
   ChefHat,
   Lock,
 } from 'lucide-react';
-import { NavLink, useOutletContext } from 'react-router-dom';
+import { NavLink, useNavigate, useOutletContext } from 'react-router-dom';
 import { getNavItemsForUser } from '../utils/roles.js';
+import { useEffect } from 'react';
 
 const UserNavbarMobile = ({sidebarOpen, setSidebarOpen}) => {
     const { user } = useOutletContext() || {};
     const navigation = getNavItemsForUser(user);
     const initial = user?.name?.charAt(0)?.toUpperCase() || '?';
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const handleKeyDown = e => {
+            if(e.ctrlKey && e.key.toLowerCase() === 'm'){
+                e.preventDefault();
+                navigate("/manage-member");
+            }
+
+            if(e.ctrlKey && e.key.toLowerCase() === 'd'){
+                e.preventDefault();
+                navigate("/dashboard");
+            }
+
+            if(e.ctrlKey && e.key.toLowerCase() === 'p'){
+                e.preventDefault();
+                navigate("/products");
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        }
+    }, []);
 
     return (
         <aside className={`

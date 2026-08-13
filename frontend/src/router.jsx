@@ -9,7 +9,7 @@ import ReceiptPrinting from '../pages/ReceiptPrinting.jsx';
 import BillingPage from '../pages/BillingPage.jsx';
 import Login from '../pages/Login.jsx';
 import Signup from '../pages/Signup.jsx';
-import AddMember from '../pages/AddMember.jsx';
+import ManageMember from '../pages/ManageMember.jsx';
 import { getUserLoader } from '../loaders/getUserLoader.js';
 
 // createBrowserRouter builds the routing table for the whole app
@@ -26,7 +26,7 @@ const router = createBrowserRouter(
           <Route path="/products" element={<Product />} />
           <Route path="/billing" element={<BillingPage />} />
           <Route path="/receipts" element={<ReceiptPrinting />} />
-          <Route path="/add-member" element={<AddMember />} />
+          <Route path="/manage-member" element={<ManageMember />} />
         </Route>
       </Route>
     </>

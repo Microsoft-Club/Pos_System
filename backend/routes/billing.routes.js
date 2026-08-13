@@ -3,7 +3,7 @@ import { Router } from "express";
 
 // Router lets us group the related routes in one file
 import { listItems,createOrder } from "../controllers/billing.controller.js";
-import {protect} from "../controllers/authController.js";
+import {authorize, protect} from "../controllers/authController.js";
 
 
 //we will import the controller function for this route
@@ -12,12 +12,12 @@ const router=Router();
 
 // when someone sends GET request to get items of a specific company
 // full path -- mounted on app.js
-router.get("/items", protect, listItems);
+router.get("/items", protect, authorize(['MASTER_ADMIN', 'CASHIER']), listItems);
 
 //POST request for adding orders i.e POST /api/v1/billing/order
 //Process: When someone sends POST to "/orders" then 
 //we will simulatenouly createOrder function
-router.post("/orders", protect, createOrder);
+router.post("/orders", protect, authorize(['MASTER_ADMIN', 'CASHIER']), createOrder);
 
 // export so app.js can import and mount this router
 export default router;

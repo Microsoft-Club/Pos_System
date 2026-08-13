@@ -5,8 +5,8 @@ import { AppError } from "../utils/error.js";
 export const getItems = async (req, res, next) => {
     try {
         // Run a SELECT query to get all items from the table
-        const queryText = "SELECT * FROM items ORDER BY id ASC";
-        const result = await pool.query(queryText);
+        const queryText = "SELECT * FROM items WHERE company_id = $1 ORDER BY id ASC";
+        const result = await pool.query(queryText, [req.user.company_id]);
 
         // Send the fetched items back to the user
         res.status(200).json({

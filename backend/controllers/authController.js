@@ -73,7 +73,7 @@ export const login = async(req, res, next) => {
         const user = result.rows[0];
 
         if(!user || !(await bcrypt.compare(password, user.password))) {
-            throw new AppError("Invalid email and password.", 401);
+            throw new AppError("Incorrect email or password.", 401);
         }
 
         req.user = user;

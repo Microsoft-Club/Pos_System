@@ -129,7 +129,7 @@ export default function BillingPage() {
       setToast({ type: 'success', text: `Order #${result.order_id} saved!` })
       completeActiveOrder()
     } catch (error) {
-      console.error('Checkout failed:', error)
+      // console.error('Checkout failed:', error)
       setToast({ type: 'error', text: error.message || 'Checkout failed.' })
     } finally {
       setIsSaving(false)

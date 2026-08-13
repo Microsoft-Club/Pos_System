@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Calculator from './Calculator.jsx'
 import { formatRs } from '../utils/money.js'
 
@@ -64,6 +64,32 @@ export default function CartPanel({
       setTimeout(() => setConfirmClear(false), 3000)
     }
   }
+
+  useEffect(() => {
+    const handleKeyDown = e => {
+      if(e.key === 'F4'){
+        e.preventDefault();
+        togglePanel('customize');
+      }
+
+      if(e.key === 'F9'){
+        e.preventDefault();
+        if(!isEmpty && !isSaving) onCheckout();
+      }
+
+      if(e.ctrlKey && e.key.toLowerCase() === 'x'){
+        e.preventDefault();
+        onClear();
+        setConfirmClear(false);
+      }
+    } 
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [isEmpty, isSaving, confirmClear]);
 
   return (
     <aside className="relative w-80 bg-surface border-l border-edge flex flex-col shrink-0">
