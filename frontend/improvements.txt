@@ -7,4 +7,4 @@ shift + tab for moving to previous item
 ctrl + x for clearing transaction
 ctrl + m for manager menu
 ctrl + d for dashboard
-ctrl + n for adding new product and closing the add product form
+ctrl + i for adding new product and closing the add product form
