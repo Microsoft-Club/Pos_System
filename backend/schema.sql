@@ -17,7 +17,7 @@ CREATE TABLE users (
 	company_role user_type,
 	company_id INT, 
 	reset_token TEXT,
-	reset_token_expiry TIMESTAMP
+	reset_token_expiry TIMESTAMPTZ
 );
 
 CREATE TABLE company (
@@ -42,7 +42,7 @@ CREATE TABLE items (
 
 CREATE TABLE orders (
 	id SERIAL PRIMARY KEY,
-	created_at TIMESTAMP DEFAULT NOW(),
+	created_at TIMESTAMPTZ DEFAULT NOW(),
 	company_id INT NOT NULL,
 	subtotal NUMERIC(10, 2) NOT NULL DEFAULT 0,
 	discount_rate NUMERIC(5, 2) NOT NULL DEFAULT 0,
