@@ -1,6 +1,9 @@
 import pool from "../database.js";
 import { AppError } from "../utils/error.js";
 
+const RECEIPT_LIMIT = 10;
+const ALLOWED_PAYMENT_METHODS = ["CASH", "CARD"];
+
 const buildTotals = (items) => {
     const subtotal = items.reduce((sum, item) => sum + Number(item.line_total), 0);
     const total = parseFloat((subtotal).toFixed(2));
@@ -30,21 +33,22 @@ const mapOrderRow = (header, itemRows) => {
         company_id: header.company_id,
         company_name: header.company_name,
         company_logo: header.company_logo || null,
+        payment_method: header.payment_method || "CASH",
         printed_at: header.printed_at || null,
         items
     });
 };
 
-// GET /api/v1/receipts — recent orders for reprint / preview
+// GET /api/v1/receipts — latest 10 orders for the user's company
 export const getRecentReceipts = async (req, res, next) => {
-    const { limit = 20 } = req.query;
-
     try {
         const headerQuery = `
             SELECT
                 o.id,
                 o.created_at,
                 o.company_id,
+                o.payment_method,
+                o.printed_at,
                 c.name AS company_name,
                 NULLIF(c.logo, '') AS company_logo,
                 COALESCE(SUM(oi.quantity * i.price), 0) AS order_total
@@ -52,11 +56,11 @@ export const getRecentReceipts = async (req, res, next) => {
             JOIN (SELECT * FROM company WHERE id = $2) c ON c.id = o.company_id
             JOIN order_items oi ON oi.order_id = o.id
             JOIN items i ON i.id = oi.item_id
-            GROUP BY o.id, o.created_at, o.company_id, c.name, c.logo
+            GROUP BY o.id, o.created_at, o.company_id, o.payment_method, o.printed_at, c.name, c.logo
             ORDER BY o.id DESC
             LIMIT $1;
         `;
-        const headers = await pool.query(headerQuery, [Math.min(parseInt(limit, 10) || 20, 50), req.user.company_id]);
+        const headers = await pool.query(headerQuery, [RECEIPT_LIMIT, req.user.company_id]);
 
         const orderIds = headers.rows.map((row) => row.id);
         const itemsQuery = `
@@ -103,13 +107,19 @@ export const getReceiptById = async (req, res, next) => {
                 o.id,
                 o.created_at,
                 o.company_id,
+                o.payment_method,
+                o.printed_at,
                 c.name AS company_name,
                 NULLIF(c.logo, '') AS company_logo
             FROM orders o
             JOIN company c ON c.id = o.company_id
-            WHERE company_id = $1 AND o.id = $2;
+            WHERE o.company_id = $1 AND o.id = $2;
         `;
         const headerResult = await pool.query(headerQuery, [req.user.company_id, id]);
+
+        if (headerResult.rowCount === 0) {
+            throw new AppError("Receipt not found.", 404);
+        }
 
         const itemsQuery = `
             SELECT
@@ -134,20 +144,30 @@ export const getReceiptById = async (req, res, next) => {
     }
 };
 
-// PATCH /api/v1/receipts/:id/print — record payment method + printed timestamp
+// PATCH /api/v1/receipts/:id/print — store payment method + printed_at
 export const markReceiptPrinted = async (req, res, next) => {
     const { id } = req.params;
+    const paymentMethod = String(req.body?.payment_method || "CASH").toUpperCase();
+
+    if (!ALLOWED_PAYMENT_METHODS.includes(paymentMethod)) {
+        throw new AppError("Invalid payment method. Use CASH or CARD.", 400);
+    }
 
     try {
         const result = await pool.query(
             `
-            UPDATE orders SET
-            created_at = NOW()
-            WHERE id = $1 AND company_id = $2
-            RETURNING id, created_at, company_id;
+            UPDATE orders
+            SET payment_method = $1,
+                printed_at = NOW()
+            WHERE id = $2 AND company_id = $3
+            RETURNING id, created_at, company_id, payment_method, printed_at;
             `,
-            [id, req.user.company_id]
+            [paymentMethod, id, req.user.company_id]
         );
+
+        if (result.rowCount === 0) {
+            throw new AppError("Receipt not found.", 404);
+        }
 
         return res.status(200).json({
             success: true,

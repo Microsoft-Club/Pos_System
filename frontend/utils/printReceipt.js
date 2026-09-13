@@ -17,18 +17,19 @@ const PRINT_MOUNT_ID = "receipt-print-mount";
 const PRINT_PAGE_STYLE_ID = "receipt-print-page-style";
 
 export async function markOrderPrinted(orderId, paymentMethod = "CASH") {
-  try {
-    const response = await fetch(`${API_BASE}/receipts/${orderId}/print`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ payment_method: paymentMethod }),
-    });
-    return await response.json();
-  } catch (err) {
-    console.warn("Could not mark receipt printed:", err);
-    return { success: false, message: err.message };
+  const response = await fetch(`${API_BASE}/receipts/${orderId}/print`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ payment_method: paymentMethod }),
+  });
+  const body = await response.json();
+
+  if (!response.ok || !body.success) {
+    throw new Error(body.message || "Could not mark receipt as printed.");
   }
+
+  return body;
 }
 
 function pxToMm(px) {

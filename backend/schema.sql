@@ -52,7 +52,8 @@ CREATE TABLE orders (
 	extra_charge NUMERIC(10, 2) NOT NULL DEFAULT 0,
 	total NUMERIC(10, 2) NOT NULL DEFAULT 0,
 	payment_method VARCHAR(20) NOT NULL DEFAULT 'CASH',
-	FOREIGN KEY(company_id) REFERENCES company(id)
+	printed_at TIMESTAMPTZ,
+	FOREIGN KEY(company_id) REFERENCES company(id) ON DELETE CASCADE
 );
 
 CREATE TABLE order_items (

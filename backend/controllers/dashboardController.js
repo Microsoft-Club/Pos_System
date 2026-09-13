@@ -19,7 +19,7 @@ export const getDashboardStats = async (req, res, next) => {
         const todayOrders = parseInt(statsResult.rows[0].today_orders);
         const itemsSold = parseInt(statsResult.rows[0].items_sold);
 
-        // 2. Get 7 Days Weekly Sales Trend
+        // 2. Get 7 Days Weekly Sales Trend (scoped to the logged-in user's company)
         const trendQuery = `
             SELECT 
                 d.date::date AS sale_date,
@@ -28,13 +28,13 @@ export const getDashboardStats = async (req, res, next) => {
             FROM (
                 SELECT generate_series(CURRENT_DATE - INTERVAL '6 days', CURRENT_DATE, '1 day')::date AS date
             ) d
-            LEFT JOIN orders o ON DATE(o.created_at) = d.date
+            LEFT JOIN orders o ON DATE(o.created_at) = d.date AND o.company_id = $1
             LEFT JOIN order_items oi ON o.id = oi.order_id
             LEFT JOIN items i ON oi.item_id = i.id
             GROUP BY d.date
             ORDER BY d.date ASC;
         `;
-        const trendResult = await pool.query(trendQuery);
+        const trendResult = await pool.query(trendQuery, [req.user.company_id]);
         const weeklySales = trendResult.rows.map(row => {
             const dateObj = new Date(row.sale_date);
             return {

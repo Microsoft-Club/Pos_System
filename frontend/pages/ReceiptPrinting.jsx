@@ -58,7 +58,6 @@ export default function ReceiptPrinting() {
     setStatusMsg("");
   };
 
-
   const handlePrint = async () => {
     if (!selectedOrder) return;
     setPrinting(true);
@@ -66,27 +65,28 @@ export default function ReceiptPrinting() {
 
     try {
       const result = await markOrderPrinted(selectedOrder.id, PAYMENT_METHOD);
+      const printedAt = result?.data?.printed_at || new Date().toISOString();
 
       setOrders((prev) =>
         prev.map((o) =>
           o.id === selectedOrder.id
             ? {
                 ...o,
-                payment_method: PAYMENT_METHOD,
-                printed_at: result?.data?.printed_at || new Date().toISOString(),
+                payment_method: result?.data?.payment_method || PAYMENT_METHOD,
+                printed_at: printedAt,
               }
             : o
         )
       );
 
-      setStatusMsg("Cash payment recorded. Sending receipt to printer…");
+      setStatusMsg("Marked as printed. Sending receipt to printer…");
 
       setTimeout(() => {
         triggerThermalPrint(
           {
             ...selectedOrder,
-            payment_method: PAYMENT_METHOD,
-            printed_at: result?.data?.printed_at || new Date().toISOString(),
+            payment_method: result?.data?.payment_method || PAYMENT_METHOD,
+            printed_at: printedAt,
           },
           PAYMENT_METHOD
         );
@@ -98,7 +98,7 @@ export default function ReceiptPrinting() {
     } catch (err) {
       console.error(err);
       setPrinting(false);
-      setStatusMsg("Print failed. Check printer connection and try again.");
+      setStatusMsg(err.message || "Print failed. Check printer connection and try again.");
     }
   };
 
@@ -176,7 +176,7 @@ export default function ReceiptPrinting() {
                   Recent Orders
                 </h2>
                 <p className="text-xs text-fg-muted mt-0.5">
-                  Select a sale to reprint or test the thermal layout
+                  Latest 10 orders — select one to preview or print
                 </p>
               </div>
             </div>

@@ -74,7 +74,7 @@ export default function Product() {
     }
 
     if (!user?.company_id) {
-      setError('Company ID not available from user context yet.');
+      setError('You must belong to a company before adding items.');
       return;
     }
 
@@ -90,7 +90,6 @@ export default function Product() {
           name: form.name.trim(),
           price: parseFloat(form.price),
           type: form.type,
-          company_id: user.company_id,
         }),
       });
 
